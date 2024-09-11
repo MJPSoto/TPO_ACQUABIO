@@ -1,9 +1,5 @@
 import os
-import math
-import time
-import threading
 from tabulate import tabulate
-import datetime
 
 def crear_archivo_productos():
     file = open("archivo_productos.csv", "a+", encoding="utf-8")
@@ -112,35 +108,13 @@ dict_productos = {
     120: ["resina", "190000", "25Ls"],
 }
 
-
-def frame():
-    offset = 1
-    while True:
-        clear_console()
-        for y in range(amplitud * 2):
-            for x in range(longitud):
-
-                if y == int(amplitud * math.sin((x + offset) * 0.2) + amplitud):
-                    print("*", end="")
-                else:
-                    print(" ", end="")
-            print()
-        offset += 1
-        time.sleep(velocidad)
-    return None
-
-
 def clear_console() -> None:
     """
     contrato: esta función limpia la consola
     pre: esta función no obtiene ningun parametro
     post: esta función no devuelve nada None
     """
-    if os.name == "nt":
-        os.system("cls")
-    else:
-        os.system("clear")
-    return None
+    os.system("cls" if os.name == "nt" else "clear")
 
 
 def mostrar_menu(key) -> None:
@@ -187,17 +161,6 @@ def main():
             pass
         case _:
             print("La opción no existe")
-    """
-    anim_thread = threading.Thread(target=frame)
-    anim_thread.daemon = True 
-    anim_thread.start()
-
-    while True:
-        command = input("\nEscribe 'stop' para detener la animación: ").strip().lower()
-        if command == 'stop':
-            break
-    """
-
 
 # variables globales
 amplitud = 5
