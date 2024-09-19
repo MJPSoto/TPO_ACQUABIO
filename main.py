@@ -12,7 +12,9 @@ def crear_archivo_productos():
 
 
 def crear_nuevo_cliente():
-    #se definiran las variables principales que posteriormente iran a el diccionario
+    """aun se requiere agregar la fecha de instalacion y el conteo de dias para las alertas"""
+
+    #se definiran las variables principales que posteriormente iran al csv
     nombre = input("Ingrse el nombre del cliente: ").lower
     telefono = int(input("Ingrese el teléfono del cliente: "))
     direccion = input("Ingrese la dirección del cliente: ").lower
@@ -32,6 +34,7 @@ def crear_nuevo_cliente():
     print(f"Cliente {nombre} agregado correctamente con ID: {cliente_id}")
 
 def actualizar_datos_cliente(cliente_id = int):
+    """aun se requiere agregar la fecha de instalacion y su funcion de actualizarla dentro de la funcion"""
     filas = []
     encontrado = False
 
