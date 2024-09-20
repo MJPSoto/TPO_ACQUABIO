@@ -1,4 +1,4 @@
-def crear_mensaje(id_mensaje: int):
+def crear_mensaje():
     """
     Se repíte lo mismo de arriba 
     id mensaje --> generado aleatoriamente  
@@ -7,13 +7,13 @@ def crear_mensaje(id_mensaje: int):
     """
     pass
 
-def actualizar_mensaje(id_mensaje: int):
+def actualizar_mensaje():
     """
     Actualizar mensaje con ese id
     """
     pass
 
-def borrar_mensaje(id_mensaje: int):
+def borrar_mensaje():
     """
     Borrar mensaje con ese id
     """
@@ -25,7 +25,7 @@ def ver_mensajes():
     """
     pass
 
-def ver_mensaje(id_mensaje: int):
+def ver_mensaje():
     """
     Ver un mensaje por id
     """

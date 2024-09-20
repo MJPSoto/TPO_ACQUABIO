@@ -1,88 +1,159 @@
-
-import datetime
 from random import randint
+from menues import menues as menu
+from tabulate import tabulate
+import re
+import json
+import datetime
 
 
-def crear_nuevo_cliente():
-    """aun se requiere agregar la fecha de instalacion y el conteo de dias para las alertas"""
+def verificar_celular(celular: str) -> bool:
+    patron = r"^\d{2}\s\d{4}-\d{4}$"
+    return bool(re.match(patron, celular))
 
-    #se definiran las variables principales que posteriormente iran al csv
-    nombre = input("Ingrse el nombre del cliente: ").lower
-    telefono = int(input("Ingrese el teléfono del cliente: "))
-    direccion = input("Ingrese la dirección del cliente: ").lower
-    localidad = input("Ingrese la localidad del cliente: ").lower
 
-    #tambien se definira la fecha de  la compra segun la fecha actual de ejecucion usando la libreria de datatime
+def obtener_datos_cliente():
+    """
+    Está función obtiene los datos del cliente por consola
+
+    pre: Está función no necesita parametros
+
+    post: Esta función devuelve un diccionario con los datos del cliente
+    """
+    nombre = input("Ingrese el nombre del cliente: ")
+    while True:
+        telefono = input("Ingrese el teléfono del cliente (Ej: 11 1234-5678): ")
+        if verificar_celular(telefono):
+            break
+        else:
+            print("Teléfono no válido. Intente de nuevo.")
+    direccion = input("Ingrese la dirección del cliente: ")
+    localidad = input("Ingrese la localidad del cliente: ")
     fecha_compra = datetime.datetime.now().strftime("%Y-%m-%d")
     id_cliente = randint(10000, 99999)
-    
-    #los valores seran cargados en un archivo csv
-    with open("clientes.csv", "a+", newline='', encoding="utf-8") as file:
-        writer = writer(file)
-        writer.writerow([id_cliente, nombre, telefono, direccion, localidad, fecha_compra])
-
-    print(f"Cliente {nombre} agregado correctamente con ID: {id_cliente}")
-
-
-def actualizar_datos_cliente(cliente_id: int):
-    """aun se requiere agregar la fecha de instalacion y su funcion de actualizarla dentro de la funcion"""
-    filas = []
-    encontrado = False
-
-    # Leer todos los datos del archivo CSV
-    with open("clientes.csv", "r", encoding="utf-8") as file:
-        reader = reader(file)
-        for fila in reader:
-            if fila[0] == str(cliente_id):
-                #se muestran los datos originales para que sea facil encontrar cual es el que debe ser actualizado
-                print(f"Datos actuales del cliente con ID {cliente_id}:")
-                print(f"Nombre completo: {fila[1]}")
-                print(f"Teléfono: {fila[2]}")
-                print(f"Dirección: {fila[3]}")
-                print(f"Localidad: {fila[4]}")
-                print(f"Fecha de compra: {fila[5]}")
-
-                #se solicitan los nuevos valores o se mantienen los originales
-                print("\nIngrese los nuevos datos (presiona enter para mantener los valores originales):")
-                nombre = input(f"Nuevo nombre completo ({fila[1]}): ").lower or fila[1]
-                telefono = input(f"Nuevo teléfono ({fila[2]}): ") or fila[2]
-                direccion = input(f"Nueva dirección ({fila[3]}): ").lower or fila[3]
-                localidad = input(f"Nueva localidad ({fila[4]}): ").lower() or fila[4]
-
-                #la fecha de compra no se actualiza
-                fecha_compra = fila[5]
-
-                #se actualiza la fila con los nuevos valores
-                fila = [cliente_id, nombre, telefono, direccion, localidad, fecha_compra]
-                encontrado = True
-            filas.append(fila)
-
-    #en el caso de que el id no sea encontrado, se genera un error 
-    if encontrado == False:
-        print(f"Cliente con ID {cliente_id} no encontrado o inexistente")
-        return
-    
-    #si todo se realizo correctamente, los datos son actualizados en el csv
-    with open("clientes.csv", "w", newline='', encoding="utf-8") as file:
-        writer = writer(file)
-        writer.writerows(filas)
-
-    print(f"Datos de cliente (ID {cliente_id}) actualizados correctamente")
+    nuevo_cliente = {
+        "id": id_cliente,
+        "nombre": nombre,
+        "telefono": telefono,
+        "direccion": direccion,
+        "localidad": localidad,
+        "fecha_compra": fecha_compra,
+    }
+    return nuevo_cliente
 
 
-def borrar_cliente(id_usaurio: int):
+def leer_JSON():
+    archivo_path = "JSON/clientes.json"
+
+    try:
+        with open(archivo_path, "r") as archivo:
+            clientes = json.load(archivo)
+    except (FileNotFoundError, json.JSONDecodeError):
+        clientes = []
+    return clientes
+
+
+def crear_nuevo_cliente() -> None:
     """
-    borrar cliente con ese id
+    Está función carga un nuevo cliente al json de clientes
+
+    pre: Está función no necesita parametros
+
+    post: Esta función Guarda un nuevo cliente en el archivo clientes.json.
     """
-    pass
+
+    # Solicitar datos del cliente
+    clientes = leer_JSON()
+    clientes.append(obtener_datos_cliente())
+
+    with open("JSON/clientes.json", "w") as archivo:
+        json.dump(clientes, archivo, indent=4)
+    print("Cliente agregado exitosamente.")
+    menu.menu_clientes()
+    return None
+
+
+def actualizar_datos_cliente():
+    """
+    Está función actualiza los datos de un cliente en particular
+
+    pre: Está función no necesita parametros
+
+    post: Esta función actualiza los datos de un cliente en el archivo json
+    """
+
+    while True:
+        try:
+            id_cliente = int(input("Ingrese el ID del cliente: "))
+            break
+        except ValueError as e:
+            print(f"Error{e}")
+    clientes = leer_JSON()
+    if not clientes:
+        print("No se encontraron clientes")
+        menu.menu_clientes()
+    for cliente in clientes:
+        if cliente["id"] == id_cliente:
+            nuevos_datos = obtener_datos_cliente()
+            for key, value in nuevos_datos.items():
+                if key != "id":
+                    cliente[key] = value
+            with open("JSON/clientes.json", "w") as archivo:
+                json.dump(clientes, archivo, indent=4)
+            print("Cliente actualizado correctamente.")
+            menu.menu_clientes()
+    return None
+
+
+def borrar_cliente():
+    """
+    Está función borra un cliente del la lista de clientes
+
+    pre: Está función no necesita parametros
+
+    post: Esta función borra un cliente del archivo json de clientes
+    """
+    while True:
+        try:
+            id_cliente = int(input("Ingrese el ID del cliente: "))
+            break
+        except ValueError as e:
+            print(f"Error{e}")
+    clientes = leer_JSON()
+    if not clientes:
+        print("No se encontraron clientes")
+        menu.menu_clientes()
+    clientes_actualizados = [
+        cliente for cliente in clientes if cliente["id"] != id_cliente
+    ]
+
+    if len(clientes) == len(clientes_actualizados):
+        print("Cliente no encontrado.")
+    else:
+        with open("JSON/clientes.json", "w") as archivo:
+            json.dump(clientes_actualizados, archivo, indent=4)
+        print("Cliente borrado correctamente.")
+
+    menu.menu_clientes()
+    return None
+
 
 def mostrar_clientes():
     """
-    Mostrar todos los datos de todos los clientes
-    """
-    pass
+    Está función muestra todos los clientes
 
-def ver_datos_cliente(id_usaurio: int):
+    pre: Está función no necesita parametros
+
+    post: Esta función lista todos los clientes que existen en el archivo json clientes
+    """
+    clientes = leer_JSON()
+    if not clientes:
+        print("No se encontraron clientes")
+        menu.menu_clientes()
+    print(tabulate(clientes, headers="keys"))
+    return None
+
+
+def ver_datos_cliente():
     """
     Mostrar datos del cliente con ese id
     """
