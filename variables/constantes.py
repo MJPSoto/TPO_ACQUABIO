@@ -44,3 +44,44 @@ dict_opciones = {
         6: "Volver",
     },
 }
+
+#stock de productos
+stock_productos = {
+    #Sal 25Kg
+    "110": "0",
+    #filtro de carbón activado mini
+    "111": "0",
+    #filtro de carbón activado XL
+    "112": "0",
+    #filtro de carbón activado jumbo
+    "113": "0",
+    #filtro de carbón activado BIG BLUE
+    "114": "0",
+    #filtro de sedimentos mini
+    "115": "0",
+    #filtro de sedimentos XL
+    "116": "0",
+    #filtro de sedimentos jumbo
+    "117": "0",
+    #filtro de sedimentos BIG BLUE
+    "118": "0",
+    #filtro de carbón granular mini
+    "119": "0",
+    #resina 25Ls
+    "120": "0"
+}
+
+#lista de referencia con las claves y descricoines de productos
+lista_claves = [
+    "110: Sal 25kg",
+    "111: filtro de carbón activado mini",
+    "112: filtro de carbón activado xl",
+    "113: filtro de carbón activado jumbo",
+    "114: filtro de carbón activado BIG BLUE",
+    "115: filtro de sedimentos mini",
+    "116: filtro de sedimentos xl",
+    "117: filtro de sedimentos jumbo",
+    "118: filtro de sedimentos BIG BLUE",
+    "119: filtro de carbón granular mini",
+    "120: resina 25Ls"
+]
