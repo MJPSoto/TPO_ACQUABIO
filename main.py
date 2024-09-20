@@ -35,5 +35,6 @@ def menu_options_recursivo(op: int) -> None:
 def main():
     option = menu_opciones(0)
     option = menu_options_recursivo(option)
+
 if __name__ == "__main__":
     main()
