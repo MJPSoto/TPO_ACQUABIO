@@ -6,6 +6,24 @@ import json
 import datetime
 
 
+def verificar_nombre(nombre_completo:str) -> bool:
+    """En esta funcion verificamos si el nombre del cliente es valido
+
+    Args:
+        nombre (str): Ingreso nombre y apellido del cliente
+
+    Returns:
+        bool: retorno true si se cumplen las condiciones
+    """
+    nombre_valido = "[A-Za-z\s]+$"
+    while True:
+        verificacion = re.match(nombre_valido, nombre_completo)
+        if verificacion:
+            return True
+        else:
+            print("Nombre invalido, ingrese solo caracteres alfabeticos y no termine con espacios")
+            
+            
 def verificar_telefono(telefono:int) ->bool:
     """Esta funcion verifica si un numero es valido
 
@@ -19,17 +37,51 @@ def verificar_telefono(telefono:int) ->bool:
         return True
     return False
 
+
 def verificar_direccion(direccion:str)-> bool:
-    if len(direccion) > 4:
+    """Esta funcion verifica si la direccion tiene algun dato
+
+    Args:
+        direccion (str): Recibo datos tipo string
+
+    Returns:
+        bool: retorno true si la longitud tiene al menos cuatro caracteres
+    """
+    if len(direccion) >= 4:
         return True
     return False
     pass
 
-def verificar_fecha_compra(fecha_compra:str) ->bool:
-    pass
+
+def fecha_compra() ->bool:
+    """En esta funcion verifico si la fecha ingresada es valida
+
+    Args:
+        No recibe argumentos
+
+    Returns:
+        bool: retorno true si es valida
+    """
+    while True:
+        anio = int(input("Ingrese el anio de la compra: "))
+        mes = int(input("Ingrese el mes de la compra: "))
+        dia = int(input("Ingrese el dia de la compra: "))
+        fecha_compra = datetime.date(anio, mes, dia)
+        if fecha_compra:
+            return True
+        else:
+            print("Fecha invalida, ingrese nuevamente los datos")
 
 
 def verificar_id_cliente(id_cliente:str) ->bool:
+    """_summary_
+
+    Args:
+        id_cliente (str): _description_
+
+    Returns:
+        bool: _description_
+    """
     clientes = leer_JSON()
     if id_cliente != clientes["id"]:
         return True
@@ -69,7 +121,7 @@ def obtener_datos_cliente():
             print("Teléfono no válido. Intente de nuevo.")
     direccion = input("Ingrese la dirección del cliente: ")
     localidad = input("Ingrese la localidad del cliente: ")
-    fecha_compra = datetime.datetime.now().strftime("%Y-%m-%d")
+    fecha_compra = fecha_compra()
     id_cliente = randint(10000, 99999)
     nuevo_cliente = {
         "id": id_cliente,
