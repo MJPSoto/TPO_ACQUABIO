@@ -24,3 +24,23 @@ def mostrar_opciones(dict_opciones: dict, option: int) -> None:
         )
     )
     return None
+
+#aca paso la funcion leer json para hacer los llamados en general
+def leer_JSON(ruta):
+    """
+    esta funcion lee la el archivo dela ruta y genera una lista con los datos
+
+    pre: esta funcion recive como parametro una ruta de archivo de json
+
+    post: si en cuentra el archivo devuelve una lista de diccionarios 
+    y sino devielve una lista vacia
+    """
+    archivo_path = ruta
+    try:
+        with open(archivo_path, "r") as archivo:
+            datos = json.load(archivo)
+    except (FileNotFoundError, json.JSONDecodeError):
+        datos = []
+    return datos
+
+

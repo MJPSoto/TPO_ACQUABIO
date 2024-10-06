@@ -1,5 +1,6 @@
 from random import randint
 from menues import menues as menu
+from funciones import funcionesX as fx
 from tabulate import tabulate
 import re
 import json
@@ -40,17 +41,19 @@ def obtener_datos_cliente():
     }
     return nuevo_cliente
 
-
-def leer_JSON():
-    archivo_path = "JSON/clientes.json"
-
+#aca estaba declarada la funcion anteriormente###############
+"""
+def leer_JSON(ruta):
+    archivo_path = ruta
     try:
         with open(archivo_path, "r") as archivo:
             clientes = json.load(archivo)
     except (FileNotFoundError, json.JSONDecodeError):
         clientes = []
     return clientes
+"""
 
+##############################################################
 
 def crear_nuevo_cliente() -> None:
     """
@@ -62,7 +65,7 @@ def crear_nuevo_cliente() -> None:
     """
 
     # Solicitar datos del cliente
-    clientes = leer_JSON()
+    clientes = fx.leer_JSON(ruta)
     clientes.append(obtener_datos_cliente())
 
     with open("JSON/clientes.json", "w") as archivo:
@@ -87,7 +90,7 @@ def actualizar_datos_cliente():
             break
         except ValueError as e:
             print(f"Error{e}")
-    clientes = leer_JSON()
+    clientes = fx.leer_JSON(ruta)
     if not clientes:
         print("No se encontraron clientes")
         menu.menu_clientes()
@@ -118,7 +121,7 @@ def borrar_cliente():
             break
         except ValueError as e:
             print(f"Error{e}")
-    clientes = leer_JSON()
+    clientes = fx.leer_JSON(ruta)
     if not clientes:
         print("No se encontraron clientes")
         menu.menu_clientes()
@@ -145,7 +148,7 @@ def mostrar_clientes():
 
     post: Esta función lista todos los clientes que existen en el archivo json clientes
     """
-    clientes = leer_JSON()
+    clientes = fx.leer_JSON(ruta)
     if not clientes:
         print("No se encontraron clientes")
         menu.menu_clientes()
