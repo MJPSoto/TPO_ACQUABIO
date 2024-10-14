@@ -1,18 +1,10 @@
 [
     {
-        "id": 74370,
-        "nombre": "Mateo",
-        "telefono": "11 3222-5423",
-        "direccion": "Casa de peluche",
-        "localidad": "Costa",
-        "fecha_compra": "2024-09-19"
-    },
-    {
-        "id": 72470,
-        "nombre": "Juana",
-        "telefono": "11 3222-5423",
-        "direccion": "Casa de nose ",
-        "localidad": "pancho ",
-        "fecha_compra": "2024-09-20"
+        "id": 1,
+        "nombre": "",
+        "telefono": "",
+        "direccion": "",
+        "localidad": "holis",
+        "fecha_compra": null
     }
 ]
