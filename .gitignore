@@ -2,4 +2,6 @@
 !.gitignore
 !*.csv
 !*.json
+*.pyc
+__pycache__/
 !README.md
