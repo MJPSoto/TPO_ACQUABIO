@@ -1,9 +1,7 @@
-from random import randint
 from menues import menues as menu
 from tabulate import tabulate
 import re
 import json
-import datetime
 from datetime import date
 
 
