@@ -1,26 +1,22 @@
-import random as rn
-import datetime as dt
-import re
 from menues import menues as menu
-from variables import constantes as cs
 from funciones import funcionesX as fx
 import json
 
-ruta = "JSON/mensajes.json"
+RUTA = "JSON/mensajes.json"
 
 def obtener_datos_mensaje() -> list:
     """
     Esta funcion toma los datos del mensaje nuevo y los valida
 
-    pre:no recive nada como parametro, toma los datos dentro de la funcion
+    pre: no recive nada
 
     post: devuelve una lista con los datos
     """
     while True:
         try: 
             nuevo_mensaje = input("Ingrese nuevo mensaje: ")
-            #verifico si el mensaje es valido y no es demaciado largo
-            if 0 > len(nuevo_mensaje) <= 200:
+            #verifico si el mensaje es valido y no es demasiado largo
+            if 0 > len(nuevo_mensaje) <= 200: ################### expresiones regulares
                 print(f"El mensaje es: {nuevo_mensaje}")
                 dias = int(input("Ingrese la cantidad de días: "))
                 #verifico que la cantidad de dias sea valida
@@ -45,12 +41,12 @@ def crear_mensaje(mensaje: list) -> None:
     post: agrega los datos como par clave valor al diccionario del json
     """
     #leo el json y lo guardo en la variable mansajes
-    mensajes = fx.leer_JSON(ruta)
+    mensajes = fx.leer_JSON(RUTA)
     #recorro los mensajes para ver si esta la key ya existe
     for key in mensajes.keys():
         if key != mensaje[0]:
             mensajes[mensaje[0]] = mensaje[1]
-    with open(ruta, "w") as archivo:
+    with open(RUTA, "w") as archivo:
         json.dump(mensajes, archivo, indent=4)
     print("Mensaje cargado.")
     menu.menu_mensajes()
@@ -62,9 +58,9 @@ def actualizar_mensaje() -> None:
     Obtine el mensaje nuevo a travez de la funcion obtener_datos_mensaje, busca la clave
     que es la cantidad de dias, y si está modifica el mensaje
 
-    pre: toma los datos dentro de la funcion
+    pre: no recive nada
 
-    port: carga el nuevo mensaje, no devuelve nada
+    port: no devuelve nada
     """
     #obtengo el menssaje nuevo
     mensaje_nuevo = obtener_datos_mensaje()
@@ -73,13 +69,13 @@ def actualizar_mensaje() -> None:
     #defino los mensajes de la misma manera
     mensaje = mensaje_nuevo[1]
     #leo el json
-    mensajes = fx.leer_JSON(ruta)
+    mensajes = fx.leer_JSON(RUTA)
     #comparo para ver si la clave(los dias) existen en el json
     for key in mensajes.keys():
         if key == dias:
             mensajes[dias] = [mensaje]
     #vuelvo a cargar todo en el json
-    with open(ruta, "w") as archivo:
+    with open(RUTA, "w") as archivo:
         json.dump(mensajes, archivo, indent=4)
     print("Mensaje cargado.")
     menu.menu_mensajes()
@@ -87,48 +83,75 @@ def actualizar_mensaje() -> None:
 
 
 
-def borrar_mensaje():
+def borrar_mensaje() -> None:
     """
-    Borrar mensaje con ese id
+    Lee el json encontrando el mensaje que se quiere borrar mediante el Id, vuelve a cargar
+    el json con los mensajes excepto el eliminado.
+
+    pre: no recive nada
+
+    prost: no devuelve nada
     """
     #defino los dias desde la lista devuelta en la linea anterior
-    dias = mensaje_nuevo[0]
-    #leo el json
-    mensajes = fx.leer_JSON(ruta)
-    #comparo para ver si la clave(los dias) existen en el json
-    for key in mensajes.keys():
-        if key == dias:
-            print(mensajes[dias])
-            ok = input("Este es  el mensaje que queres eliminar? (y/n): ").lower()
-            if ok == "y":
-                del mensajes[dias]
-                menu.menu_mensajes()
-            else:
-                print("Mensaje no eliminado")
-                menu.menu_mensajes()
-    #vuelvo a cargar todo en el json
-    with open(ruta, "w") as archivo:
-        json.dump(mensajes, archivo, indent=4)
-    print("Mensaje cargado.")
-    menu.menu_mensajes()
+    try:
+        dias = int(input("Ingrese la cantidad de días: "))
+        #verifico que la cantidad de dias sea valida
+    except ValueError:
+        print("El valor ingresado es invalido")
+    if 0 > dias <= 100:
+        #leo el json
+        mensajes = fx.leer_JSON(RUTA)
+        #comparo para ver si la clave(los dias) existen en el json
+        for key in mensajes.keys():
+            if key == dias:
+                print(mensajes[dias])
+                ok = input("Este es  el mensaje que queres eliminar? (y/n): ").lower()
+                if ok == "y":
+                    del mensajes[dias]
+                    menu.menu_mensajes()
+                else:
+                    print("Mensaje no eliminado")
+                    menu.menu_mensajes()
+        #vuelvo a cargar todo en el json
+        with open(RUTA, "w") as archivo:
+            json.dump(mensajes, archivo, indent=4)
+        print("Mensaje cargado.")
+        menu.menu_mensajes()
+    else:
+        print("Número ingresado fuera de rango")
     return None
 
-def mostrar_mensajes():
+def mostrar_mensajes() -> None:
     """
-    Ver todos los mensajes disponibles
+    Lee el json para imprimirlas en pantalla
+
+    pre: no recive nada
+
+    post: no devuelve nada, solo imprime en pantalla
     """
-    mensajes = fx.leer_JSON(ruta)
+    mensajes = fx.leer_JSON(RUTA)
     for key, value in mensajes:
         print(f"Dias: {key}- mensaje: {value}")
     return None
 
-def ver_mensaje():
+def ver_mensaje() -> None:
     """
-    Ver un mensaje por id
-    """
-    mensajes = fx.leer_JSON(ruta)
-    dias =
-    for key, value in mensajes:
-        print(f"Dias: {key}- mensaje: {value}")
-    pass
+    Busca un mensaje mediante el id, si lo encuentra lo mustra en pantalla
 
+    pre: no recive nada
+
+    post: no devuelve nada
+    """
+    mensajes = fx.leer_JSON(RUTA)
+    try:
+        dias = int(input("Ingrese la cantidad de días: "))
+        #verifico que la cantidad de dias sea valida
+        if 0 > dias <= 100:
+            for key, value in mensajes:
+                if key == dias: 
+                    print(f"Dias: {key}- mensaje: {value}")
+        else:
+            print("Cantidad de dias ingresada no valida.")
+    except ValueError:
+        print("El valor ingresado es invalido")
+    return None

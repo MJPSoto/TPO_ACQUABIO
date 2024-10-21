@@ -85,7 +85,3 @@ lista_claves = [
     "119: filtro de carbón granular mini",
     "120: resina 25Ls"
 ]
-
-mensajes = {
-    
-}

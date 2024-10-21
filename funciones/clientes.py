@@ -6,6 +6,8 @@ import re
 import json
 import datetime
 
+#declaro la ruta que voy a usar para la funcion leer json
+ruta = "JSON/clientes.json"
 
 def verificar_celular(celular: str) -> bool:
     patron = r"^\d{2}\s\d{4}-\d{4}$"
@@ -100,7 +102,7 @@ def actualizar_datos_cliente():
             for key, value in nuevos_datos.items():
                 if key != "id":
                     cliente[key] = value
-            with open("JSON/clientes.json", "w") as archivo:
+            with open(ruta, "w") as archivo:
                 json.dump(clientes, archivo, indent=4)
             print("Cliente actualizado correctamente.")
             menu.menu_clientes()
@@ -132,7 +134,7 @@ def borrar_cliente():
     if len(clientes) == len(clientes_actualizados):
         print("Cliente no encontrado.")
     else:
-        with open("JSON/clientes.json", "w") as archivo:
+        with open(ruta, "w") as archivo:
             json.dump(clientes_actualizados, archivo, indent=4)
         print("Cliente borrado correctamente.")
 
@@ -161,3 +163,4 @@ def ver_datos_cliente():
     Mostrar datos del cliente con ese id
     """
     pass
+
