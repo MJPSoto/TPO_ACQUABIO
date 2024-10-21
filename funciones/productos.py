@@ -36,9 +36,43 @@ def actualizar_producto():
 
 def borrar_producto():
     """
-    Actualizar mensaje con ese id
+    esta funcion elimina un producto del stock
+
+    pre:esta funcion no recibe parametros externos
+
+    post: esta funcion no retorna nada
     """
-    pass
+    with open("../CSV/archivo_productos.csv", "r", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+        productos = list(reader)
+
+    while True:
+        #se solicitar el ID del producto
+        id_producto = input("Ingrese el ID del producto (3 dígitos): ")
+        #se usa re para verificar el id correctamente
+        if re.fullmatch(r'\d{3}', id_producto):
+            break
+        else:
+            print("ID de producto inválido.")
+    #se crea una nueva lista con todos los productos menos el que se va eliminar
+    productos_actualizados = [
+        producto for producto in productos if producto['id'] != id_producto
+    ]
+
+    #si no se encuentra el producto se notifica
+    if len(productos_actualizados) == len(productos):
+        print(f"No existe un producto con el ID {id_producto}.")
+        return
+
+    #se sobreescribe el archivo con los productos actualizados
+    with open(archivo_csv, "w", newline='', encoding="utf-8") as file:
+        fieldnames = productos[0].keys()  # Obtener los nombres de las columnas
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(productos_actualizados)
+
+    print("producto eliminado correctamente")
+    return None
 
 def ver_productos():
     """

@@ -153,8 +153,30 @@ def mostrar_clientes():
     return None
 
 
-def ver_datos_cliente():
+def ver_datos_cliente() -> None:
     """
     Mostrar datos del cliente con ese id
+
+    pre:esta funcion no recibe parametros
+
+    post: esta funcion muestra en pantalla los datos de un cliente segun el id soliciado
     """
-    pass
+    clientes = leer_JSON()
+    while True:
+        #se solicita el id del cliente
+        id_cliente = input("Ingrese el ID del cliente:")
+
+        # Usar re para verificar que el ID tenga exactamente 5 dígitos
+        if re.fullmatch(r'\d{5}', id_cliente):
+            break
+        else:
+            print("ID invalido")
+    #se busca en la lista de clientes el ID del cliente
+    cliente = next((c for c in clientes if c['id'] == int(id_cliente)), None)
+    #en caso de encontrarlo, lo muestra en pantalla, en el contrario, avisa al usuario que no existe
+    if cliente:
+        print(tabulate([cliente], headers="keys", tablefmt="grid"))
+    else:
+        print(f"no existe un cliente con el ID {id_cliente}.")
+    menu.menu_clientes()
+    return None
