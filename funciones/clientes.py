@@ -172,18 +172,27 @@ def obtener_datos_cliente():
 
     post: Esta función devuelve un diccionario con los datos del cliente
     """
+
     ide = crear_id_cliente()
     nombre = ingresar_nombre()
     telefono = ingresar_telefono()
-    # ciudad = ingresar_ciudad()
+    ciudad = ingresar_ciudad()
     direccion = ingresar_direccion()
     fecha_compra = ingresar_fecha_compra()
 
+    ciudades = leer_JSON_ciudades()
+    for valor in ciudades:
+        if list(valor.keys())[0] == ciudad:
+            ciudad = valor
+            break
+    if isinstance(ciudad, str):
+        ciudad = {"100100": "Otro"}
+   
     nuevo_cliente = {
         "id": ide,
         "nombre": nombre,
         "telefono": telefono,
-        #"ciudad": ciudad,
+        "ciudad": ciudad,
         "direccion": direccion,
         "fecha_compra": fecha_compra,
     }

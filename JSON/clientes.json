@@ -12,5 +12,25 @@
         "telefono": "5544778899",
         "direccion": "Casa enso",
         "fecha_compra": "2024/11/05"
+    },
+    {
+        "id": 3,
+        "nombre": "Mateo",
+        "telefono": "1122334455",
+        "ciudad": {
+            "7167": "Pinamar"
+        },
+        "direccion": "Casa mateio",
+        "fecha_compra": "2024/05/05"
+    },
+    {
+        "id": 4,
+        "nombre": "Agus",
+        "telefono": "1122334455",
+        "ciudad": {
+            "100100": "Otro"
+        },
+        "direccion": "casa agus",
+        "fecha_compra": "2023/05/05"
     }
 ]
