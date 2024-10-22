@@ -19,28 +19,21 @@
         <main class="contenedor_main">
             <section class="section clientes" id="clientes">
                 <div class="contenedor_contenido">
-                    <div class="contendor_clientes_opciones">
-                        <!-- ABM (Alta, Baja, Modificación) de Clientes -->
-                        <h3>Gestión de Clientes</h3>
-                        <input type="button" id="btnAgregar" value="Agregar Cliente"></input>
-                        <input type="button" id="btnModificar" value="Modificar Cliente"></input>
-                        <input type="button" id="btnEliminar" value="Eliminar Cliente"></input>
-                        <input type="button" id="btnVerClientes" value="Ver Clientes"></input>
-                        <input type="button" id="btnVerEstadoisticas" value="Ver estadisticas"></input>
+                    <h2>Listado de Clientes</h2>
+                    <div class="listaClientes" id="contenedorClientes">
                     </div>
-                    <div class="contendor_clientes">
-                        <h2>Listado de Clientes</h2>
-                        <div class="listaClientes">
-                            <a href="#">Cliente 1</a>
-                            <a href="#">Cliente 2</a>
-                            <a href="#">Cliente 3</a>
-                            <a href="#">Cliente 4</a>
-                            <a href="#">Cliente 5</a>
-                            <a href="#">Cliente 6</a>
-                            <a href="#">Cliente 7</a>
-                            <a href="#">Cliente 8</a>
-                        </div>
-                    </div>
+                </div>
+                <div class="contenedor_contenido">
+                    <h2>Agregar un cliente</h2>
+                        <form action="#" class="listaClientes">
+                            <input class="input_text" type="text" placeholder="Ingrese el nombre del cliente.." required>
+                            <input class="input_text" type="phone" placeholder="Ingrese el telefono del cliente.." required>
+                            <input class="input_text" type="text" placeholder="Ingrese la dirección del cliente.." required>
+                            <input class="input_text" type="text" placeholder="Ingrese la localidad del cliente.." required>
+                            <div class="contenedor_btn_agregar">
+                                <input class="btn_agregar" type="submit" id="btnAgregar" value="Agregar Cliente"></input>
+                            </div>
+                        </form>
                 </div>
             </section>
             
@@ -56,7 +49,6 @@
                 </div>
             </section>
         </main>
-        
-        
+        <script src="../js/datos.js"></script>
     </body>
 </html>
