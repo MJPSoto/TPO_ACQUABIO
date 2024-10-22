@@ -1,3 +1,9 @@
+from menues import menues as menu
+from variables import constantes as cs
+import re
+import json
+import datetime
+
 def ingresar_direccion():
     while True:
         try:
@@ -66,17 +72,22 @@ def verificar_telefono(telefono:str) ->bool:
 
 
 def ingresar_fecha_compra():
+    patron_anio = r"^(20[0-9]{2}|[2-9]\d{3})$"
+    patron_mes = r"^(0[1-9]|1[0-2])$"
+    patron_dia = r"^(0[1-9]|[12][0-9]|3[01])$"
     while True:
         try:
             anio = int(input("Ingrese su el anio de la compra: "))
-            if anio > 2015:
+            if re.match(patron_anio, anio):
                 mes = int(input("Ingrese el mes de la compra: "))
-                if mes >= 1 and mes <= 12:
+                if re.match(patron_mes, mes):
                     dia = int(input("Ingrese el dia de la compra: "))
-                    if dia >= 1 and dia <= 31:
-                        fecha_compra = anio, mes, dia
+                    if re.match(patron_dia, dia):
+                        fecha = anio, mes, dia
+                        fecha_str = list(str(valor) for valor in fecha)
+                        fecha_final = "/".join(fecha_str)
                         if verificar_fecha_compra(anio, mes, dia):
-                            return fecha_compra
+                            return fecha_final
         except ValueError:
             print("Ingrese solo datos numericos.")
                 
@@ -98,7 +109,7 @@ def verificar_fecha_compra(anio, mes, dia) -> bool:
             print("Fecha invalida, ingrese nuevamente los datos")
             
             
-def id_cliente() ->tuple:
+def id_cliente() ->int:
     """Esta funcion lee el JSON y guarda los datos en una lista. Verifica si hay algun valor en "id"
     Si no lo hay, guardamos 0 en la lista, caso contrario, el mayor dato encontrado en "id".
     Retornamos
@@ -109,12 +120,14 @@ def id_cliente() ->tuple:
     maximo = 0
     clientes = leer_JSON()
     lista_id = []
-    numero_a_sumar = 1
-    if "id" in clientes:
-        lista_id.append(clientes["id"])
-    maximo = max(lista_id, default=0)  # Valor por defecto si la lista está vacía
-    print(clientes)
-    return (maximo + numero_a_sumar)
+    for cliente in clientes:
+        ide = cliente["id"]
+        lista_id.append(ide)
+    if lista_id:
+        maximo = max(lista_id)
+    else:
+        maximo = 0
+    return maximo + 1
 
 
 def obtener_datos_cliente():

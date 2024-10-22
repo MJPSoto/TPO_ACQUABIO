@@ -1,13 +1,11 @@
-from random import randint
 from menues import menues as menu
 from variables import constantes as cs
-from tabulate import tabulate
 import re
 import json
 import datetime
 
 
-def ingresar_direccion():
+def ingresar_direccion() -> str:
     while True:
         try:
             direccion = input("Ingrese su direccion: ")
@@ -15,11 +13,11 @@ def ingresar_direccion():
                 return direccion
         except Exception:
             print("Ingrese nuevamente su direccion.")
-        
-        
-def verificar_direccion(direccion):
-   patron = r"^[a-zA-Z0-9\s]+$"
-   return bool(re.match(patron, direccion))
+
+
+def verificar_direccion(direccion:str) -> bool:
+    patron = r"^[a-zA-Z0-9\s]+$"
+    return bool(re.match(patron, direccion))
 
 
 def ingresar_nombre() -> str:
@@ -38,10 +36,10 @@ def ingresar_nombre() -> str:
                 return nombre
         except Exception:
             print("Error")
-        
-        
+
+
 def verificar_nombre(nombre):
-    nombre_valido = "[A-Za-z\s]{4,}$"
+    nombre_valido = r"[A-Za-z\s]{3,}$"
     return bool(re.match(nombre_valido, nombre))
 
 
@@ -57,10 +55,10 @@ def ingresar_telefono() -> str:
             if verificar_telefono(telefono):
                 return telefono
         except ValueError:
-            print("Error")            
+            print("Error")
 
-    
-def verificar_telefono(telefono:str) ->bool:
+
+def verificar_telefono(telefono: str) -> bool:
     """Esta funcion verifica si un numero es valido
 
     Args:
@@ -75,14 +73,17 @@ def verificar_telefono(telefono:str) ->bool:
 
 
 def ingresar_fecha_compra():
+    patron_anio = r"^(20[0-9]{2}|[2-9]\d{3})$"
+    patron_mes = r"^(0[1-9]|1[0-2])$"
+    patron_dia = r"^(0[1-9]|[12][0-9]|3[01])$"
     while True:
         try:
             anio = int(input("Ingrese su el anio de la compra: "))
-            if anio > 2015:
+            if re.match(patron_anio, anio):
                 mes = int(input("Ingrese el mes de la compra: "))
-                if mes >= 1 and mes <= 12:
+                if re.match(patron_mes, mes):
                     dia = int(input("Ingrese el dia de la compra: "))
-                    if dia >= 1 and dia <= 31:
+                    if re.match(patron_dia, dia):
                         fecha = anio, mes, dia
                         fecha_str = list(str(valor) for valor in fecha)
                         fecha_final = "/".join(fecha_str)
@@ -90,7 +91,7 @@ def ingresar_fecha_compra():
                             return fecha_final
         except ValueError:
             print("Ingrese solo datos numericos.")
-                
+
 
 def verificar_fecha_compra(anio, mes, dia) -> bool:
     """En esta funcion verifico si la fecha ingresada es valida
@@ -108,8 +109,37 @@ def verificar_fecha_compra(anio, mes, dia) -> bool:
         else:
             print("Fecha invalida, ingrese nuevamente los datos")
             
-            
-def id_cliente() ->tuple:
+
+def ingresar_ciudad() -> int:
+    while True:
+        try:
+            codigo_postal = input("Ingrese su codigo postal: ")
+            if verificar_ciudad(codigo_postal):    
+                print("Codigo postal valido")
+                return codigo_postal
+        except ValueError:
+            print("Ingrese nuevamente su codigo postal")
+
+
+def verificar_ciudad(codigo_postal:str) -> bool:
+    codigo_postal_valido = r"[0-9\s]{4}$"
+    return bool(re.match(codigo_postal_valido, codigo_postal))
+
+
+def verificar_ciudades_disponibles(codigo_postal: str) -> str:
+    while True:
+        try:
+            if verificar_ciudad(codigo_postal):
+                localidades = leer_JSON_ciudades()
+                localidad = localidades.get(codigo_postal)
+                if localidad:
+                    return codigo_postal
+                else:
+                    return localidades.get("","100100")
+        except Exception as e:
+            print("Error")
+
+def crear_id_cliente() -> tuple:
     """Esta funcion lee el JSON y guarda los datos en una lista. Verifica si hay algun valor en "id"
     Si no lo hay, guardamos 0 en la lista, caso contrario, el mayor dato encontrado en "id".
     Retornamos
@@ -120,7 +150,6 @@ def id_cliente() ->tuple:
     maximo = 0
     clientes = leer_JSON()
     lista_id = []
-    numero_a_sumar = 1
     for cliente in clientes:
         ide = cliente["id"]
         lista_id.append(ide)
@@ -139,21 +168,33 @@ def obtener_datos_cliente():
 
     post: Esta función devuelve un diccionario con los datos del cliente
     """
-    ide = id_cliente()
+    ide = crear_id_cliente()
     nombre = ingresar_nombre()
     telefono = ingresar_telefono()
-    #ciudad = ingresar_ciudad()
+    # ciudad = ingresar_ciudad()
     direccion = ingresar_direccion()
     fecha_compra = ingresar_fecha_compra()
-    
+
     nuevo_cliente = {
         "id": ide,
         "nombre": nombre,
         "telefono": telefono,
+        #"ciudad": ciudad,
         "direccion": direccion,
         "fecha_compra": fecha_compra,
     }
     return nuevo_cliente
+
+
+def leer_JSON_ciudades():
+    archivo_path = "JSON/ciudades.json"
+
+    try:
+        with open(archivo_path, "r") as archivo:
+            clientes = json.load(archivo)
+    except (FileNotFoundError, json.JSONDecodeError):
+        clientes = []
+    return clientes
 
 
 def leer_JSON():
@@ -274,6 +315,3 @@ def ver_datos_cliente():
     Mostrar datos del cliente con ese id
     """
     pass
-
-
-

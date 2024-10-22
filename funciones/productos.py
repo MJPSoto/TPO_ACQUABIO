@@ -1,4 +1,5 @@
 from variables import constantes as cs
+from verificaciones import verificaciones as vf
 
 def crear_producto():
     """

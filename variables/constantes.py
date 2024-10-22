@@ -86,13 +86,3 @@ lista_claves = [
     "120: resina 25Ls"
 ]
 
-
-ciudades = {
-    "001": "Villa Gesell",
-    "002": "Pinamar",
-    "003": "San Clemente del Tuyú",
-    "004": "Santa Teresita",
-    "005": "General Madariaga",
-    "006": "Mar de Ajó",
-    "100100": "Otro"
-}
