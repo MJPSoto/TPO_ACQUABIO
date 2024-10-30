@@ -1,5 +1,6 @@
 from tabulate import tabulate
 from collections.abc import Sequence
+import json
 import os
 
 
@@ -25,8 +26,6 @@ def mostrar_opciones(dict_opciones: dict[int, str], option: int) -> None:
             data, headers=["N°1", "Opción"], tablefmt="fancy_grid", stralign="center"
         )
     )
-    return None
-
 
 def mostrar_logo() -> None:
     """
@@ -40,4 +39,11 @@ def mostrar_logo() -> None:
             colalign=("center",),
         )
     )
-    return
+
+def leer_JSON(path: str) -> None:
+    try:
+        with open(path, "r") as archivo:
+            clientes = json.load(archivo)
+    except (FileNotFoundError, json.JSONDecodeError):
+        clientes = []
+    return clientes

@@ -1,9 +1,12 @@
 from menues import menues as menu
-from variables import constantes as cs
+from funciones import funcionesX as fx
 from tabulate import tabulate
 import re
 import json
 import datetime
+
+# declaro la ruta que voy a usar para la funcion leer json
+ruta = "JSON/clientes.json"
 
 
 def ingresar_direccion() -> str:
@@ -16,7 +19,7 @@ def ingresar_direccion() -> str:
             print("Ingrese nuevamente su direccion.")
 
 
-def verificar_direccion(direccion:str) -> bool:
+def verificar_direccion(direccion: str) -> bool:
     patron = r"^[a-zA-Z0-9\s]+$"
     return bool(re.match(patron, direccion))
 
@@ -73,20 +76,20 @@ def verificar_telefono(telefono: str) -> bool:
     return False
 
 
-def ingresar_fecha_compra():
+def ingresar_fecha_compra() -> None:
     patron_anio = r"^20[0-9]{2}$"
     patron_mes = r"^(0[1-9]|1[0-2])$"
     patron_dia = r"^(0[1-9]|[12][0-9]|3[01])$"
     while True:
         try:
             anio = input("Ingrese su el anio de la compra: ")
-            if not(re.match(patron_anio, anio)):
+            if not (re.match(patron_anio, anio)):
                 raise ValueError("El año no es valido")
             mes = input("Ingrese el mes de la compra: ")
-            if not(re.match(patron_mes, mes)):
+            if not (re.match(patron_mes, mes)):
                 raise ValueError("El mes no es valido")
             dia = input("Ingrese el dia de la compra: ")
-            if not(re.match(patron_dia, dia)):
+            if not (re.match(patron_dia, dia)):
                 raise ValueError("El dia no es valido")
             fecha = anio, mes, dia
             fecha_final = "/".join(fecha)
@@ -112,20 +115,20 @@ def verificar_fecha_compra(anio, mes, dia) -> bool:
             return True
         else:
             print("Fecha invalida, ingrese nuevamente los datos")
-            
+
 
 def ingresar_ciudad() -> int:
     while True:
         try:
             codigo_postal = input("Ingrese su codigo postal: ")
-            if verificar_ciudad(codigo_postal):    
+            if verificar_ciudad(codigo_postal):
                 print("Codigo postal valido")
                 return codigo_postal
         except ValueError:
             print("Ingrese nuevamente su codigo postal")
 
 
-def verificar_ciudad(codigo_postal:str) -> bool:
+def verificar_ciudad(codigo_postal: str) -> bool:
     codigo_postal_valido = r"[0-9\s]{4}$"
     return bool(re.match(codigo_postal_valido, codigo_postal))
 
@@ -134,14 +137,15 @@ def verificar_ciudades_disponibles(codigo_postal: str) -> str:
     while True:
         try:
             if verificar_ciudad(codigo_postal):
-                localidades = leer_JSON_ciudades()
+                localidades = fx.leer_JSON("JSON/ciudades.json")
                 localidad = localidades.get(codigo_postal)
                 if localidad:
                     return codigo_postal
                 else:
-                    return localidades.get("","100100")
+                    return localidades.get("", "100100")
         except Exception as e:
             print("Error")
+
 
 def crear_id_cliente() -> tuple:
     """Esta funcion lee el JSON y guarda los datos en una lista. Verifica si hay algun valor en "id"
@@ -152,7 +156,7 @@ def crear_id_cliente() -> tuple:
         bool: Retorna una tupla con el id
     """
     maximo = 0
-    clientes = leer_JSON()
+    clientes = fx.leer_JSON(ruta)
     lista_id = []
     for cliente in clientes:
         ide = cliente["id"]
@@ -164,7 +168,7 @@ def crear_id_cliente() -> tuple:
     return maximo + 1
 
 
-def obtener_datos_cliente():
+def obtener_datos_cliente() -> None:
     """
     Está función obtiene los datos del cliente por consola
 
@@ -180,14 +184,15 @@ def obtener_datos_cliente():
     direccion = ingresar_direccion()
     fecha_compra = ingresar_fecha_compra()
 
-    ciudades = leer_JSON_ciudades()
+    # ciudades = fx.leer_JSON_ciudades()
+    ciudades = fx.leer_JSON("JSON/ciudades.json")
     for valor in ciudades:
         if list(valor.keys())[0] == ciudad:
             ciudad = valor
             break
     if isinstance(ciudad, str):
         ciudad = {"100100": "Otro"}
-   
+
     nuevo_cliente = {
         "id": ide,
         "nombre": nombre,
@@ -197,28 +202,6 @@ def obtener_datos_cliente():
         "fecha_compra": fecha_compra,
     }
     return nuevo_cliente
-
-
-def leer_JSON_ciudades():
-    archivo_path = "JSON/ciudades.json"
-
-    try:
-        with open(archivo_path, "r") as archivo:
-            clientes = json.load(archivo)
-    except (FileNotFoundError, json.JSONDecodeError):
-        clientes = []
-    return clientes
-
-
-def leer_JSON():
-    archivo_path = "JSON/clientes.json"
-
-    try:
-        with open(archivo_path, "r") as archivo:
-            clientes = json.load(archivo)
-    except (FileNotFoundError, json.JSONDecodeError):
-        clientes = []
-    return clientes
 
 
 def crear_nuevo_cliente() -> None:
@@ -231,17 +214,16 @@ def crear_nuevo_cliente() -> None:
     """
 
     # Solicitar datos del cliente
-    clientes = leer_JSON()
+    clientes = fx.leer_JSON(ruta)
     clientes.append(obtener_datos_cliente())
 
     with open("JSON/clientes.json", "w") as archivo:
         json.dump(clientes, archivo, indent=4)
     print("Cliente agregado exitosamente.")
     menu.menu_clientes()
-    return None
 
 
-def actualizar_datos_cliente():
+def actualizar_datos_cliente() -> None:
     """
     Está función actualiza los datos de un cliente en particular
 
@@ -250,13 +232,8 @@ def actualizar_datos_cliente():
     post: Esta función actualiza los datos de un cliente en el archivo json
     """
 
-    while True:
-        try:
-            id_cliente = int(input("Ingrese el ID del cliente: "))
-            break
-        except ValueError as e:
-            print(f"Error{e}")
-    clientes = leer_JSON()
+    id_cliente = obtener_id_cliente()
+    clientes = fx.leer_JSON(ruta)
     if not clientes:
         print("No se encontraron clientes")
         menu.menu_clientes()
@@ -266,14 +243,37 @@ def actualizar_datos_cliente():
             for key, value in nuevos_datos.items():
                 if key != "id":
                     cliente[key] = value
-            with open("JSON/clientes.json", "w") as archivo:
+            with open(ruta, "w") as archivo:
                 json.dump(clientes, archivo, indent=4)
             print("Cliente actualizado correctamente.")
             menu.menu_clientes()
-    return None
 
 
-def borrar_cliente():
+def mostrar_clientes() -> None:
+    """
+    Está función muestra todos los clientes
+
+    pre: Está función no necesita parametros
+
+    post: Esta función lista todos los clientes que existen en el archivo json clientes
+    """
+    clientes = fx.leer_JSON(ruta)
+    if not clientes:
+        print("No se encontraron clientes")
+        menu.menu_clientes()
+    print(tabulate(clientes, headers="keys"))
+
+
+def obtener_id_cliente() -> int:
+    while True:
+        try:
+            id_cliente = int(input("Ingrese el numero del usuario: "))
+            return id_cliente
+        except ValueError as e:
+            print("El numero de usuario no existe.")
+
+
+def borrar_cliente() -> None:
     """
     Está función borra un cliente del la lista de clientes
 
@@ -281,13 +281,8 @@ def borrar_cliente():
 
     post: Esta función borra un cliente del archivo json de clientes
     """
-    while True:
-        try:
-            id_cliente = int(input("Ingrese el ID del cliente: "))
-            break
-        except ValueError as e:
-            print(f"Error{e}")
-    clientes = leer_JSON()
+    id_cliente = obtener_id_cliente()
+    clientes = fx.leer_JSON(ruta)
     if not clientes:
         print("No se encontraron clientes")
         menu.menu_clientes()
@@ -298,33 +293,17 @@ def borrar_cliente():
     if len(clientes) == len(clientes_actualizados):
         print("Cliente no encontrado.")
     else:
-        with open("JSON/clientes.json", "w") as archivo:
+        with open(ruta, "w") as archivo:
             json.dump(clientes_actualizados, archivo, indent=4)
         print("Cliente borrado correctamente.")
 
-    menu.menu_clientes()
-    return None
 
-
-def mostrar_clientes():
-    """
-    Está función muestra todos los clientes
-
-    pre: Está función no necesita parametros
-
-    post: Esta función lista todos los clientes que existen en el archivo json clientes
-    """
-    clientes = leer_JSON()
-    if not clientes:
-        print("No se encontraron clientes")
-        menu.menu_clientes()
-    print(tabulate(clientes, headers="keys"))
-    print(cs.ciudades.values())
-    return None
-
-
-def ver_datos_cliente():
+def ver_datos_cliente() -> None:
     """
     Mostrar datos del cliente con ese id
     """
-    pass
+    id_cliente = obtener_id_cliente()
+    clientes = fx.leer_JSON("JSON/clientes.json")
+    for cliente in clientes:
+        if cliente["id"] == id_cliente:
+            print(tabulate(cliente.items()))
