@@ -1,9 +1,9 @@
-[
-    {"7165": "Villa Gesell"},
-    {"7167": "Pinamar"},
-    {"7105": "San Clemente del Tuyú"},
-    {"7107": "Santa Teresita"},
-    {"7108": "Mar del Tuyu"},
-    {"7163": "General Madariaga"},
-    {"7109": "Mar de Ajó"}
-]
+{
+    "7165": "Villa Gesell",
+    "7167": "Pinamar",
+    "7105": "San Clemente del Tuyú",
+    "7107": "Santa Teresita",
+    "7108": "Mar del Tuyu",
+    "7163": "General Madariaga",
+    "7109": "Mar de Ajó"
+}

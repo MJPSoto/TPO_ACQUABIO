@@ -6,145 +6,39 @@ import json
 import datetime
 
 # declaro la ruta que voy a usar para la funcion leer json
-ruta = "JSON/clientes.json"
+ruta = "TPO_ACQUABIO/JSON/clientes.json"
 
 
-def ingresar_direccion() -> str:
+def validacion_datos(mensaje: str, mensaje_error: str, expretion: str):
     while True:
-        try:
-            direccion = input("Ingrese su direccion: ")
-            if verificar_direccion(direccion):
-                return direccion
-        except Exception:
-            print("Ingrese nuevamente su direccion.")
-
-
-def verificar_direccion(direccion: str) -> bool:
-    patron = r"^[a-zA-Z0-9\s]+$"
-    return bool(re.match(patron, direccion))
-
-
-def ingresar_nombre() -> str:
-    """En esta funcion verificamos si el nombre del cliente es valido
-
-    Args:
-        nombre (str): Ingreso nombre y apellido del cliente
-
-    Returns:
-        bool: retorno true si se cumplen las condiciones
-    """
-    while True:
-        try:
-            nombre = input("Ingrese su nombre y apellido: ")
-            if verificar_nombre(nombre):
-                return nombre
-        except Exception:
-            print("Error")
-
-
-def verificar_nombre(nombre):
-    nombre_valido = r"[A-Za-z\s]{3,}$"
-    return bool(re.match(nombre_valido, nombre))
-
-
-def ingresar_telefono() -> str:
-    """
-
-    Returns:
-        _type_: _description_
-    """
-    while True:
-        try:
-            telefono = input("Ingrese su numero de telefono. Ejemplo: 1122334455: ")
-            if verificar_telefono(telefono):
-                return telefono
-        except ValueError:
-            print("Error")
-
-
-def verificar_telefono(telefono: str) -> bool:
-    """Esta funcion verifica si un numero es valido
-
-    Args:
-        telefono (int): le paso como parametro un numero que por lo menos tenga 10 digitos y sea positivo
-
-    Returns:
-        bool: retorna true si se cumple y false si no
-    """
-    if telefono.isdigit() and len(telefono) == 10:
-        return True
-    return False
+        dato_verificar = input(mensaje)
+        if re.match(expretion, dato_verificar):
+            break
+        else:
+            print(mensaje_error)
+    return dato_verificar
 
 
 def ingresar_fecha_compra() -> None:
-    patron_anio = r"^20[0-9]{2}$"
-    patron_mes = r"^(0[1-9]|1[0-2])$"
-    patron_dia = r"^(0[1-9]|[12][0-9]|3[01])$"
+    patron_date = "^(?:\\d{4})(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])$"
     while True:
-        try:
-            anio = input("Ingrese su el anio de la compra: ")
-            if not (re.match(patron_anio, anio)):
-                raise ValueError("El año no es valido")
-            mes = input("Ingrese el mes de la compra: ")
-            if not (re.match(patron_mes, mes)):
-                raise ValueError("El mes no es valido")
-            dia = input("Ingrese el dia de la compra: ")
-            if not (re.match(patron_dia, dia)):
-                raise ValueError("El dia no es valido")
-            fecha = anio, mes, dia
-            fecha_final = "/".join(fecha)
-            if verificar_fecha_compra(anio, mes, dia):
-                return fecha_final
-        except ValueError as e:
-            print(f"Error: {e}")
-
-
-def verificar_fecha_compra(anio, mes, dia) -> bool:
-    """En esta funcion verifico si la fecha ingresada es valida
-
-    Args:
-        No recibe argumentos
-
-    Returns:
-        bool: retorno true si es valida
-    """
-    anio, mes, dia = int(anio), int(mes), int(dia)
-    while True:
-        fecha_compra = datetime.date(anio, mes, dia)
-        if fecha_compra:
-            return True
+        date = input("Ingrese la fecha. Ejemplo: 20240608: ")
+        if re.match(patron_date, date):
+            date = datetime.date(
+                int(date[:4]), int(date[4:6]), int(date[6:8])
+            ).strftime("%Y/%m/%d")
+            return date
         else:
-            print("Fecha invalida, ingrese nuevamente los datos")
-
-
-def ingresar_ciudad() -> int:
-    while True:
-        try:
-            codigo_postal = input("Ingrese su codigo postal: ")
-            if verificar_ciudad(codigo_postal):
-                print("Codigo postal valido")
-                return codigo_postal
-        except ValueError:
-            print("Ingrese nuevamente su codigo postal")
-
-
-def verificar_ciudad(codigo_postal: str) -> bool:
-    codigo_postal_valido = r"[0-9\s]{4}$"
-    return bool(re.match(codigo_postal_valido, codigo_postal))
+            print("Fecha no valida.")
 
 
 def verificar_ciudades_disponibles(codigo_postal: str) -> str:
-    while True:
-        try:
-            if verificar_ciudad(codigo_postal):
-                localidades = fx.leer_JSON("JSON/ciudades.json")
-                localidad = localidades.get(codigo_postal)
-                if localidad:
-                    return codigo_postal
-                else:
-                    return localidades.get("", "100100")
-        except Exception as e:
-            print("Error")
+    localidades = fx.leer_JSON("TPO_ACQUABIO/JSON/ciudades.json")
+    key_value = {"100100": "Otro"}
+    for key, valor in localidades.items():
+        if key == codigo_postal:
+            key_value = {key: valor}
+    return key_value
 
 
 def crear_id_cliente() -> tuple:
@@ -155,20 +49,10 @@ def crear_id_cliente() -> tuple:
     Returns:
         bool: Retorna una tupla con el id
     """
-    maximo = 0
-    clientes = fx.leer_JSON(ruta)
-    lista_id = []
-    for cliente in clientes:
-        ide = cliente["id"]
-        lista_id.append(ide)
-    if lista_id:
-        maximo = max(lista_id)
-    else:
-        maximo = 0
-    return maximo + 1
+    return max(list(cliente["id"] for cliente in fx.leer_JSON(ruta))) + 1
 
 
-def obtener_datos_cliente() -> None:
+def obtener_datos_cliente() -> dict:
     """
     Está función obtiene los datos del cliente por consola
 
@@ -176,28 +60,37 @@ def obtener_datos_cliente() -> None:
 
     post: Esta función devuelve un diccionario con los datos del cliente
     """
-
     ide = crear_id_cliente()
-    nombre = ingresar_nombre()
-    telefono = ingresar_telefono()
-    ciudad = ingresar_ciudad()
-    direccion = ingresar_direccion()
+    nombre = validacion_datos(
+        "Ingrese su nombre y apellido: ",
+        "Ingrese nuevamente el nombre",
+        "[A-Za-z\s]{3,}$",
+    )
+    telefono = validacion_datos(
+        "Ingrese su numero de telefono. Ejemplo: 1122334455: ",
+        "Ingrese nuevamente el telefono.",
+        "[0-9\s]{10}$",
+    )
+    codigo_postal = validacion_datos(
+        "Ingrese su codigo postal: ",
+        "Ingrese nuevamente su codigo postal.",
+        "[0-9\s]{4}$",
+    )
+    direccion = validacion_datos(
+        "Ingrese su direccion: ",
+        "Ingrese nuevamente su direccion.",
+        "^[a-zA-Z0-9\s]+$",
+    )
+
     fecha_compra = ingresar_fecha_compra()
 
-    # ciudades = fx.leer_JSON_ciudades()
-    ciudades = fx.leer_JSON("JSON/ciudades.json")
-    for valor in ciudades:
-        if list(valor.keys())[0] == ciudad:
-            ciudad = valor
-            break
-    if isinstance(ciudad, str):
-        ciudad = {"100100": "Otro"}
+    codigo_postal = verificar_ciudades_disponibles(codigo_postal)
 
     nuevo_cliente = {
         "id": ide,
         "nombre": nombre,
         "telefono": telefono,
-        "ciudad": ciudad,
+        "ciudad": codigo_postal,
         "direccion": direccion,
         "fecha_compra": fecha_compra,
     }
@@ -212,13 +105,29 @@ def crear_nuevo_cliente() -> None:
 
     post: Esta función Guarda un nuevo cliente en el archivo clientes.json.
     """
-
     # Solicitar datos del cliente
     clientes = fx.leer_JSON(ruta)
+    """
+    Ejemplo de lo que devuelve la funcion leer_JSON
+    [
+        {
+            "id": 5,
+            "nombre": "Mateo",
+            "telefono": "1122334455",
+            "ciudad": {
+                "7167": "Pinamar"
+            },
+            "direccion": "Casa de mateo",
+            "fecha_compra": "2024/08/06"
+        }
+    ]
+    """
     clientes.append(obtener_datos_cliente())
-
-    with open("JSON/clientes.json", "w") as archivo:
-        json.dump(clientes, archivo, indent=4)
+    try:
+        with open(ruta, "w") as archivo:
+            json.dump(clientes, archivo, indent=4)
+    except Exception:
+        print("Error al escribir el archivo clientes.")
     print("Cliente agregado exitosamente.")
     menu.menu_clientes()
 
@@ -239,6 +148,7 @@ def actualizar_datos_cliente() -> None:
         menu.menu_clientes()
     for cliente in clientes:
         if cliente["id"] == id_cliente:
+            print(tabulate(cliente.items()))
             nuevos_datos = obtener_datos_cliente()
             for key, value in nuevos_datos.items():
                 if key != "id":
@@ -293,9 +203,20 @@ def borrar_cliente() -> None:
     if len(clientes) == len(clientes_actualizados):
         print("Cliente no encontrado.")
     else:
-        with open(ruta, "w") as archivo:
-            json.dump(clientes_actualizados, archivo, indent=4)
+        try:
+            with open(ruta, "w") as archivo:
+                json.dump(clientes_actualizados, archivo, indent=4)
+        except Exception:
+            print("Error al escribir el archivo clientes.")
         print("Cliente borrado correctamente.")
+
+
+def encontrar_cliente(id_cliente: int):
+    clientes = fx.leer_JSON("TPO_ACQUABIO/JSON/clientes.json")
+    for cliente in clientes:
+        if cliente["id"] == id_cliente:
+            return cliente
+    return []
 
 
 def ver_datos_cliente() -> None:
@@ -303,7 +224,17 @@ def ver_datos_cliente() -> None:
     Mostrar datos del cliente con ese id
     """
     id_cliente = obtener_id_cliente()
-    clientes = fx.leer_JSON("JSON/clientes.json")
-    for cliente in clientes:
-        if cliente["id"] == id_cliente:
-            print(tabulate(cliente.items()))
+    datos_cliente = encontrar_cliente(id_cliente)
+    if datos_cliente:
+        tabla = [list(datos_cliente.values())]
+        # Mostrar la tabla con claves como encabezados
+        print(
+            tabulate(
+                tabla,
+                headers=datos_cliente.keys(),
+                tablefmt="fancy_grid",
+                stralign="center",
+            )
+        )
+    else:
+        print("No se ha encontrado el cliente.")

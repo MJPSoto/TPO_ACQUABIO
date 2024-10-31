@@ -3,6 +3,7 @@ from funciones import funcionesX as fx, mensajes as fm, productos as fp, cliente
 from termcolor import colored
 import time
 
+
 def menu_opciones(menu_desplegar: int) -> int:
     """
     Está función muestra las opciones del menu que haya seleccionado el usuario y devuelve el siguiente menu
@@ -19,13 +20,13 @@ def menu_opciones(menu_desplegar: int) -> int:
             if not (option in cs.dict_opciones[menu_desplegar].keys()):
                 raise ValueError()
             break
-        except ValueError:
+        except (ValueError, KeyboardInterrupt):
             print(colored("Opción ingresada no valida...", "red"))
             time.sleep(1)
     return option
 
 
-def menu_clientes()->None:
+def menu_clientes() -> None:
     """
     Está función muestra las opciones para un crud (crear un cliente, leer datos del cliente, modificar un cliente y borrar cliente)
     Pre: Está función no recibe ningun parametro
@@ -47,7 +48,7 @@ def menu_clientes()->None:
             menu_principal()
 
 
-def menu_producto()->None:
+def menu_producto() -> None:
     """
     Está función muestra las opciones para un crud (crear un producto, leer datos de un producto,
     modificar un producto y borrar producto)
@@ -70,7 +71,7 @@ def menu_producto()->None:
             menu_principal()
 
 
-def menu_mensajes()->None:
+def menu_mensajes() -> None:
     """
     Está función muestra las opciones para un crud (crear un mensaje, leer datos de un mensaje,
     modificar un mensaje y borrar mensaje)
@@ -93,7 +94,7 @@ def menu_mensajes()->None:
             menu_principal()
 
 
-def menu_principal()->None:
+def menu_principal() -> None:
     """
     Está función es el menu principal donde se inicia el programa, desde aca pasa a los siguientes menues
     Pre: Está función no recibe ningun parametro
