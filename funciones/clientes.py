@@ -38,7 +38,15 @@ def ingresar_nombre() -> str:
             print("Error")
 
 
-def verificar_nombre(nombre):
+def verificar_nombre(nombre:str) -> bool:
+    """Esta funcion verifica si el nombre proporcionado por el cliente es valido
+
+    Args:
+        nombre (str): Se ingresan datos tipo string
+
+    Returns:
+        bool: Retorna verdadero o falso
+    """
     nombre_valido = r"[A-Za-z\s]{3,}$"
     return bool(re.match(nombre_valido, nombre))
 
@@ -47,7 +55,7 @@ def ingresar_telefono() -> str:
     """
 
     Returns:
-        _type_: _description_
+        _type_: 
     """
     while True:
         try:
