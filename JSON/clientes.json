@@ -1,6 +1,7 @@
 [
     {
 <<<<<<< HEAD
+<<<<<<< HEAD
         "id": 1,
         "nombre": "franco soto",
         "telefono": "1231231231",
@@ -41,5 +42,13 @@
         "localidad": "pancho ",
         "fecha_compra": "2024-09-20"
 >>>>>>> origin
+=======
+        "id": 1,
+        "nombre": "",
+        "telefono": "",
+        "direccion": "",
+        "localidad": "holis",
+        "fecha_compra": "asd"
+>>>>>>> main
     }
 ]

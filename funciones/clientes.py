@@ -1,16 +1,20 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 from menues import menues as menu
 from variables import constantes as cs
 =======
 from random import randint
+=======
+>>>>>>> main
 from menues import menues as menu
 from tabulate import tabulate
 >>>>>>> origin
 import re
 import json
-import datetime
+from datetime import date
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 def ingresar_direccion() -> str:
     while True:
@@ -36,10 +40,14 @@ def ingresar_nombre() -> str:
     Returns:
         bool: retorno true si se cumplen las condiciones
     """
+=======
+def ingresar_nombre() -> str:
+>>>>>>> main
     while True:
         try:
             nombre = input("Ingrese su nombre y apellido: ")
             if verificar_nombre(nombre):
+<<<<<<< HEAD
                 return nombre
         except Exception:
             print("Error")
@@ -71,6 +79,42 @@ def ingresar_telefono() -> str:
                 return telefono
         except ValueError:
             print("Error")
+=======
+                print("Nombre valido")
+        except ValueError:
+            print("Ingrese correctamente el nombre y apellido")
+        return nombre
+
+def verificar_nombre(nombre:str) -> bool:
+    """En esta funcion verificamos si el nombre del cliente es valido
+
+    Args:
+        No recibe argumentos
+
+    Returns:
+        retorno el nombre y apellido del cliente
+    """
+    flag = False
+    nombre_valido = r'^(?=.{3,})[A-Za-z\s]+$'
+    while True:
+        try:
+            if re.match(nombre_valido, nombre):
+                flag = True
+        except ValueError:
+            print("Ingrese un nombre valido")
+        return flag
+
+
+def ingresar_telefono()-> str:
+    while True:
+        try:
+            telefono = input("Ingrese su numero de telefono. Ejemplo 1122334455: ")
+            if verificar_telefono(telefono):
+                print("Numero valido")
+        except ValueError:
+            print("Ingrese un numero valido")
+        return telefono
+>>>>>>> main
 
 
 def verificar_telefono(telefono: str) -> bool:
@@ -82,6 +126,7 @@ def verificar_telefono(telefono: str) -> bool:
     Returns:
         bool: retorna true si se cumple y false si no
     """
+<<<<<<< HEAD
     if telefono.isdigit() and len(telefono) == 10:
         return True
     return False
@@ -178,6 +223,103 @@ def verificar_celular(celular: str) -> bool:
     patron = r"^\d{2}\s\d{4}-\d{4}$"
     return bool(re.match(patron, celular))
 >>>>>>> origin
+=======
+    flag = False
+    telefono_valido = r'^(?=.{10})\d{10}$'
+    while True:
+        try:
+            if re.fullmatch(telefono_valido, telefono):
+                flag = True
+        except Exception as e:
+            print("Ingrese un telefono valido, ejemplo: 1122334455")
+        return flag
+    
+
+def ingresar_direccion() -> str:
+    while True:
+        try:
+            direccion = input("Ingrese su direccion: ")
+            if verificar_direccion(direccion):
+                print("Direccion valida")
+        except ValueError:
+            print("Ingrese una direccion valida")
+        return direccion
+
+
+def verificar_direccion(direccion: str) -> bool:
+    """Esta funcion verifica si la direccion tiene algun dato
+
+    Args:
+        direccion (str): Recibo datos tipo string
+
+    Returns:
+        bool: retorno true si la longitud tiene al menos cuatro caracteres
+    """
+    flag = False
+    direccion_valida = "[A-Za-z\s]+$"
+    while True:
+        try:
+            if re.match(direccion_valida, direccion):
+                flag = True
+        except ValueError: 
+            print("Ingrese datos validos")
+        return flag
+
+
+def ingresar_fecha_compra():
+    while True:
+        try:
+            anio = int(input("Ingrese el anio: "))
+            if anio > 0:
+                mes = int(input("Ingrese el mes: "))
+                if mes > 0 and mes < 13:
+                    dia = int(input("Ingrese el dia: "))
+                    fecha_compra = verificar_fecha_compra(anio, mes, dia)
+                    if fecha_compra:
+                        print("Fecha valida")
+                        break
+        except ValueError:
+            print("Ingrese una fecha valida")
+        return fecha_compra
+
+
+def verificar_fecha_compra(a:int, b:int, c:int) -> bool:
+    flag = False
+    while True:
+        try:
+            fecha = date(a, b, c)
+            if fecha:
+                print("Fecha valida")
+                flag = True
+        except ValueError:
+            print("Ingrese bien los datos")
+        return flag
+
+
+def id_cliente() -> tuple:
+    """
+    En esta funcion se genera el id de los clientes
+    En el caso de no tener datos en el archivo json, el id se inicializa en 1
+    Sino se lee el archivo json, se guardan en una lista, se busca el máximo y se le suma 1 para el próximo cliente
+    
+    Args:
+        No recibe argumentos
+    
+    Returns:
+        Tuple: retorna una tupla con el dato del id del cliente
+
+    """
+    leer_json = leer_JSON()
+    ids = []
+    if len(leer_json) > 0: 
+        for i in leer_json:
+            ids.append(i["id"])
+    else:
+        ids.append(0)
+    maximo = max(ids)
+    nuevo_id = maximo + 1
+    return (nuevo_id)
+>>>>>>> main
 
 
 def obtener_datos_cliente():
@@ -188,6 +330,7 @@ def obtener_datos_cliente():
 
     post: Esta función devuelve un diccionario con los datos del cliente
     """
+<<<<<<< HEAD
 <<<<<<< HEAD
     ide = crear_id_cliente()
     nombre = ingresar_nombre()
@@ -214,18 +357,32 @@ def obtener_datos_cliente():
     localidad = input("Ingrese la localidad del cliente: ")
     fecha_compra = datetime.datetime.now().strftime("%Y-%m-%d")
     id_cliente = randint(10000, 99999)
+=======
+    nombre = ingresar_nombre()
+    telefono = ingresar_telefono()
+    direccion = ingresar_direccion()
+    localidad = "holis"
+    fecha = ingresar_fecha_compra()
+    ide = id_cliente()
+    
+>>>>>>> main
     nuevo_cliente = {
-        "id": id_cliente,
+        "id": ide,
         "nombre": nombre,
         "telefono": telefono,
         "direccion": direccion,
         "localidad": localidad,
+<<<<<<< HEAD
 >>>>>>> origin
         "fecha_compra": fecha_compra,
+=======
+        "fecha_compra": fecha,
+>>>>>>> main
     }
     return nuevo_cliente
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 def leer_JSON_ciudades():
     archivo_path = "JSON/ciudades.json"
@@ -240,6 +397,9 @@ def leer_JSON_ciudades():
 
 =======
 >>>>>>> origin
+=======
+
+>>>>>>> main
 def leer_JSON():
     archivo_path = "JSON/clientes.json"
 
