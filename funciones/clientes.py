@@ -6,7 +6,7 @@ import json
 import datetime
 
 # declaro la ruta que voy a usar para la funcion leer json
-ruta = "TPO_ACQUABIO/JSON/clientes.json"
+ruta = "JSON/clientes.json"
 
 
 def validacion_datos(mensaje: str, mensaje_error: str, expretion: str):
@@ -140,23 +140,23 @@ def actualizar_datos_cliente() -> None:
 
     post: Esta función actualiza los datos de un cliente en el archivo json
     """
-
     id_cliente = obtener_id_cliente()
     clientes = fx.leer_JSON(ruta)
     if not clientes:
         print("No se encontraron clientes")
         menu.menu_clientes()
-    for cliente in clientes:
-        if cliente["id"] == id_cliente:
-            print(tabulate(cliente.items()))
-            nuevos_datos = obtener_datos_cliente()
-            for key, value in nuevos_datos.items():
-                if key != "id":
-                    cliente[key] = value
-            with open(ruta, "w") as archivo:
-                json.dump(clientes, archivo, indent=4)
-            print("Cliente actualizado correctamente.")
-            menu.menu_clientes()
+    datos_cliente = encontrar_cliente(id_cliente)
+    print(tabulate(datos_cliente.items()))
+    nuevos_datos = obtener_datos_cliente()
+    """
+    for key, value in nuevos_datos.items():
+        if key != "id":
+            cliente[key] = value
+    with open(ruta, "w") as archivo:
+        json.dump(clientes, archivo, indent=4)
+    print("Cliente actualizado correctamente.")
+    menu.menu_clientes()
+    """
 
 
 def mostrar_clientes() -> None:
@@ -212,7 +212,7 @@ def borrar_cliente() -> None:
 
 
 def encontrar_cliente(id_cliente: int):
-    clientes = fx.leer_JSON("TPO_ACQUABIO/JSON/clientes.json")
+    clientes = fx.leer_JSON(ruta)
     for cliente in clientes:
         if cliente["id"] == id_cliente:
             return cliente
