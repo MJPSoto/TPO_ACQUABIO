@@ -1,5 +1,8 @@
 from variables import constantes as cs
+<<<<<<< HEAD
 from verificaciones import verificaciones as vf
+=======
+>>>>>>> origin
 
 def crear_producto():
     """

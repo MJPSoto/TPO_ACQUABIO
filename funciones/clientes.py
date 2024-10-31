@@ -1,10 +1,17 @@
+<<<<<<< HEAD
 from menues import menues as menu
 from variables import constantes as cs
+=======
+from random import randint
+from menues import menues as menu
+from tabulate import tabulate
+>>>>>>> origin
 import re
 import json
 import datetime
 
 
+<<<<<<< HEAD
 def ingresar_direccion() -> str:
     while True:
         try:
@@ -166,6 +173,11 @@ def crear_id_cliente() -> tuple:
     else:
         maximo = 0
     return maximo + 1
+=======
+def verificar_celular(celular: str) -> bool:
+    patron = r"^\d{2}\s\d{4}-\d{4}$"
+    return bool(re.match(patron, celular))
+>>>>>>> origin
 
 
 def obtener_datos_cliente():
@@ -176,6 +188,7 @@ def obtener_datos_cliente():
 
     post: Esta función devuelve un diccionario con los datos del cliente
     """
+<<<<<<< HEAD
     ide = crear_id_cliente()
     nombre = ingresar_nombre()
     telefono = ingresar_telefono()
@@ -189,11 +202,31 @@ def obtener_datos_cliente():
         "telefono": telefono,
         #"ciudad": ciudad,
         "direccion": direccion,
+=======
+    nombre = input("Ingrese el nombre del cliente: ")
+    while True:
+        telefono = input("Ingrese el teléfono del cliente (Ej: 11 1234-5678): ")
+        if verificar_celular(telefono):
+            break
+        else:
+            print("Teléfono no válido. Intente de nuevo.")
+    direccion = input("Ingrese la dirección del cliente: ")
+    localidad = input("Ingrese la localidad del cliente: ")
+    fecha_compra = datetime.datetime.now().strftime("%Y-%m-%d")
+    id_cliente = randint(10000, 99999)
+    nuevo_cliente = {
+        "id": id_cliente,
+        "nombre": nombre,
+        "telefono": telefono,
+        "direccion": direccion,
+        "localidad": localidad,
+>>>>>>> origin
         "fecha_compra": fecha_compra,
     }
     return nuevo_cliente
 
 
+<<<<<<< HEAD
 def leer_JSON_ciudades():
     archivo_path = "JSON/ciudades.json"
 
@@ -205,6 +238,8 @@ def leer_JSON_ciudades():
     return clientes
 
 
+=======
+>>>>>>> origin
 def leer_JSON():
     archivo_path = "JSON/clientes.json"
 
@@ -314,7 +349,10 @@ def mostrar_clientes():
         print("No se encontraron clientes")
         menu.menu_clientes()
     print(tabulate(clientes, headers="keys"))
+<<<<<<< HEAD
     print(cs.ciudades.values())
+=======
+>>>>>>> origin
     return None
 
 

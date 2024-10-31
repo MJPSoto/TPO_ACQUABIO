@@ -108,4 +108,8 @@ def menu_principal()->None:
         case 3:
             menu_producto()
         case 4:
+<<<<<<< HEAD
             exit()
+=======
+            exit()
+>>>>>>> origin
