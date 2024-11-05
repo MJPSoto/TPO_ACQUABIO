@@ -1,5 +1,10 @@
 from variables import constantes as cs
+from funciones import funcionesX as fx
 import random as rn
+import json
+import re
+
+RUTA = "JSON/productos.json"
 
 def crear_producto() -> None:
     """
@@ -10,7 +15,7 @@ def crear_producto() -> None:
 
     post: no devuelve nada
     """
-    clave = "randint"
+    
     
     pass
 
@@ -52,7 +57,11 @@ def ver_productos():
     """
     Actualizar mensaje con ese id
     """
-    pass
+    productos = fx.leer_JSON(RUTA)
+    for key, value in productos[0].items():
+        print(f"Dias: {key}- mensaje: {value}")
+    return None
+
 
 def ver_producto():
     """

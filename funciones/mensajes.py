@@ -20,15 +20,15 @@ def obtener_datos_mensaje() -> list[str]:
     post: devuelve una lista con los datos
     """
     while True:
-        mesaje = [""]
+        mensaje = [""]
         nuevo_mensaje = input("Ingrese nuevo mensaje: ")
         #verifico si el mensaje es valido y no es demasiado largo
         if mensaje_valido(nuevo_mensaje):
             try:
-                dias = int(input("Ingrese la cantidad de días: /n"))
+                dias = input("Ingrese la cantidad de días: ")
                 #verifico que la cantidad de dias sea valida
-                if dias > 0 and dias <= 100:
-                    print(f"El mensaje es: {nuevo_mensaje}/n")
+                if int(dias) > 0 and int(dias) <= 100:
+                    print(f"El mensaje es: {nuevo_mensaje}")
                     print(f"La cantidad de dias ingresados es: {dias}")
                     #verificación de que el mensaje ingresado es correcto
                     ok = input("¿Los datos ingresados son correctos? (y/n): ").lower()
@@ -40,31 +40,32 @@ def obtener_datos_mensaje() -> list[str]:
     
     
 
-def crear_mensaje(mensaje:list[str]) -> None:
+def crear_mensaje() -> None:
     """
     Esta funcion toma los datos, comprueba si son validos y los agrega al json
     
-    pre: recive una lista con dos string
+    pre: no recibe nada
 
-    post: np devuelve nada
+    post: no devuelve nada
     """
     #leo el json y lo guardo en la variable mansajes
     mensajes = fx.leer_JSON(RUTA)
+    print(mensajes)
     nuevo_mensaje = obtener_datos_mensaje()
     #defino los dias desde la lista devuelta en la linea anterior
-    dias = mensaje_nuevo[0]
+    dias = nuevo_mensaje[0]
     #defino los mensajes de la misma manera
-    mensaje = mensaje_nuevo[1]
+    mensaje = nuevo_mensaje[1]
     #copruebo si el mensaje ya existe
-    if mensajes.get(dias) is None:
+    if mensajes[0].get(dias) is None:
         #creo el mensaje nuevo
-        mensajes[dias] = mensaje
+        mensajes[0][dias] = mensaje
         print("Mensaje cargado.")
     else:
         #compruebo si quiere reescribir el mensaje
         ok = input("El ID de mensaje ya existe quiere reemplazarlo (y/n): ").lower()
         if ok == "y":
-            mensajes[nuevo_mensaje[0]] = nuevo_mensaje[1]
+            mensajes[0][dias] = mensaje
             print("Mensaje cargado.")
         else:
             #esto no se si dejarlo asi o volver a la carga de mensajes
@@ -86,21 +87,21 @@ def actualizar_mensaje() -> None:
     port: no devuelve nada
     """
     #obtengo el menssaje nuevo
-    mensaje_nuevo = obtener_datos_mensaje()
+    nuevo_mensaje = obtener_datos_mensaje()
     #defino los dias desde la lista devuelta en la linea anterior
-    dias = mensaje_nuevo[0]
+    dias = nuevo_mensaje[0]
     #defino los mensajes de la misma manera
-    mensaje = mensaje_nuevo[1]
+    mensaje = nuevo_mensaje[1]
     #leo el json
     mensajes = fx.leer_JSON(RUTA)
     #comparo para ver si la clave(los dias) existen en el json
-    if mensajes.get(dias) is None:
-        #creo el mensaje nuevo
-        mensajes[dias] = mensaje
-        print("Mensaje cargado.")
-    else:
+    if mensajes[0].get(dias) is None:
         #si no encuentra el mensaje solo imprime un aviso
         print("Mensaje no encotrado")
+    else:
+        #creo el mensaje nuevo
+        mensajes[0][dias] = mensaje
+        print("Mensaje cargado.")
     #vuelvo a cargar todo en el json
     with open(RUTA, "w") as archivo:
         json.dump(mensajes, archivo, indent=4)
@@ -120,18 +121,21 @@ def borrar_mensaje() -> None:
     """
     #defino los dias desde la lista devuelta en la linea anterior
     try:
-        dias = int(input("Ingrese la cantidad de días: "))
+        dias = input("Ingrese la cantidad de días: ")
         #verifico que la cantidad de dias sea valida
-        if dias > 0 and dias <= 100:
+        if int(dias) > 0 and int(dias) <= 100:
             #leo el json
             mensajes = fx.leer_JSON(RUTA)
             #comparo para ver si la clave(los dias) existen en el json
-            if mensajes.get(dias) is None:
-            #creo el mensaje nuevo
-                print(mensajes[dias]/n)
+            if mensajes[0].get(dias) is None:
+                #si no encuentra ningun mensaje
+                print("Mensaje no encontrado")
+            else:
+                #creo el mensaje nuevo
+                print(mensajes[0][dias])
                 ok = input("Este es  el mensaje que queres eliminar? (y/n): ").lower()
                 if ok == "y":
-                    del mensajes[dias]
+                    del mensajes[0][dias]
                     # Vuelvo a cargar todo en el JSON
                     with open(RUTA, "w") as archivo:
                         json.dump(mensajes, archivo, indent=4)
@@ -140,15 +144,13 @@ def borrar_mensaje() -> None:
                 else:
                     print("Mensaje no eliminado")
                     menu.menu_mensajes()
-            else:
-                print("Mensaje no encontrado")
         else:
             print("Número ingresado fuera de rango")
     except ValueError:
         print("El valor ingresado es invalido")
     return None
 
-def mostrar_mensajes() -> None:
+def ver_mensajes() -> None:
     """
     Lee el json para imprimirlas en pantalla
 
@@ -157,7 +159,7 @@ def mostrar_mensajes() -> None:
     post: no devuelve nada
     """
     mensajes = fx.leer_JSON(RUTA)
-    for key, value in mensajes:
+    for key, value in mensajes[0].items():
         print(f"Dias: {key}- mensaje: {value}")
     return None
 
@@ -171,16 +173,18 @@ def ver_mensaje() -> None:
     """
     mensajes = fx.leer_JSON(RUTA)
     try:
-        dias = int(input("Ingrese la cantidad de días: "))
+        dias = input("Ingrese la cantidad de días: ")
         #verifico que la cantidad de dias sea valida
-        if dias > 0 and dias <= 100:
+        if int(dias) > 0 and int(dias) <= 100:
             #comparo para ver si la clave(los dias) existen en el json
-            if mensajes.get(dias) is None:
-                print(f"Dias: {dias}- mensaje: {mensajes[dias]}")
-            else:
-                print("Mensaje no encontrado")
+            try:
+                if mensajes[0].get(dias) is None:
+                    print("Mensaje no encontrado")
+                else:
+                    print(f"Dias: {dias}- mensaje: {mensajes[0][dias]}")
+            except KeyError as e:
+                print(f"Error: {e}")
         else:
             print("Cantidad de dias ingresada no valida.")
     except ValueError:
         print("El valor ingresado es invalido")
-    return None
