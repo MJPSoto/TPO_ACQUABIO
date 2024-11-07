@@ -1,22 +1,12 @@
 [
     {
         "id": 1,
-        "nombre": "Mateo Soto",
-        "telefono": "1122334455",
+        "nombre": "hola asd",
+        "telefono": "1231231231",
         "ciudad": {
             "7167": "Pinamar"
         },
-        "direccion": "De las orcas ",
-        "fecha_compra": "2023/08/06"
-    },
-    {
-        "id": 2,
-        "nombre": "Mateo Soto",
-        "telefono": "1122334455",
-        "ciudad": {
-            "7167": "Pinamar"
-        },
-        "direccion": "De las orcas ",
-        "fecha_compra": "2023/08/06"
+        "direccion": "foca 20",
+        "fecha_compra": "2020/02/02"
     }
 ]
