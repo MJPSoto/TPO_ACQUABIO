@@ -84,9 +84,4 @@ lista_claves = [
     "118: filtro de sedimentos BIG BLUE",
     "119: filtro de carbón granular mini",
     "120: resina 25Ls"
-<<<<<<< HEAD
 ]
-
-=======
-]
->>>>>>> origin

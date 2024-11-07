@@ -1,54 +1,12 @@
 [
     {
-<<<<<<< HEAD
-<<<<<<< HEAD
         "id": 1,
-        "nombre": "franco soto",
+        "nombre": "hola asd",
         "telefono": "1231231231",
-        "direccion": "foca"
-    },
-    {
-        "id": 2,
-        "nombre": "enso aller",
-        "telefono": "1231231321",
-        "direccion": "toro"
-    },
-    {
-        "id": 3,
-        "nombre": "franco soto",
-        "telefono": "2222244444",
-        "direccion": "foca",
-        "fecha_compra": "2020/10/9"
-    },
-    {
-        "id": 4,
-        "nombre": "agustin villavicencio",
-        "telefono": "2254525252",
-        "direccion": "del cazon 2075",
-        "fecha_compra": "2024/10/16"
-=======
-        "id": 74370,
-        "nombre": "Mateo",
-        "telefono": "11 3222-5423",
-        "direccion": "Casa de peluche",
-        "localidad": "Costa",
-        "fecha_compra": "2024-09-19"
-    },
-    {
-        "id": 72470,
-        "nombre": "Juana",
-        "telefono": "11 3222-5423",
-        "direccion": "Casa de nose ",
-        "localidad": "pancho ",
-        "fecha_compra": "2024-09-20"
->>>>>>> origin
-=======
-        "id": 1,
-        "nombre": "",
-        "telefono": "",
-        "direccion": "",
-        "localidad": "holis",
-        "fecha_compra": "asd"
->>>>>>> main
+        "ciudad": {
+            "7167": "Pinamar"
+        },
+        "direccion": "foca 20",
+        "fecha_compra": "2020/02/02"
     }
 ]

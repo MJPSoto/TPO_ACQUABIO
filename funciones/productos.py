@@ -1,21 +1,25 @@
 from variables import constantes as cs
-<<<<<<< HEAD
-from verificaciones import verificaciones as vf
-=======
->>>>>>> origin
+import random as rn
 
-def crear_producto():
+def crear_producto() -> None:
     """
-    Actualizar mensaje con ese id
+    Crea id de producto de manera aleatoria y pide al usuario que ingrese las caracteristicas
+    restantes del producto.
+
+    pre: no recive nada
+
+    post: no devuelve nada
     """
+    clave = "randint"
+    
     pass
 
-def actualizar_producto():
+def actualizar_producto() -> None:
     """
-    recibe el diccionario con el stock de los productos y una lista referencial con los productos disponibles
+    Recibe el diccionario con el stock de los productos y una lista referencial con los productos disponibles
     y sus respecticas claves.
 
-    pre: recibe un diccionario y una lista
+    pre: no recive nada
 
     post: devuelve un dicccionario
     """
@@ -35,7 +39,7 @@ def actualizar_producto():
             print("Valor de stock incorrecto")
     else:
         print("La clave ingresada no pertenece a ningun producto")
-    return cs.stock_productos
+    return None
 
 
 def borrar_producto():
