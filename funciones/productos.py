@@ -1,7 +1,5 @@
-from variables import constantes as cs
 from funciones import funcionesX as fx
 from menues import menues as menu
-import random as rn
 import json
 import re
 
@@ -11,7 +9,7 @@ def producto_valido(texto) -> bool:
     """
     Recibe un texto y comprueba si es valido o no
 
-    pre: recive un string
+    pre: recibe un string
 
     post: devuelve un booleno
     """
@@ -19,12 +17,35 @@ def producto_valido(texto) -> bool:
     patron = r"^(?=.*[A-Za-z])(?=.{4,})(?!^\d+$).*$"
     return bool(re.match(patron, texto.strip()))
 
+def volver_menu()-> None:
+    """
+    Pregunta si quiere volver al menú. Te lleva al menú principal si ingresa "y" y te lleva al menu producto
+    si ingresa "n".############
+
+    pre: no recibe nada
+
+    post: no devuelve nada
+    """
+    ok = input("¿Desea volver al menú principal? (y/n): ").lower()
+    
+    #si es "n" vuelve a producto
+    if ok == "n":
+        menu.menu_producto()
+
+    #si no es ni "n" ni "y", vuelve a ejecutar la funcion
+    if ok != "y":
+        volver_menu()
+    
+    #si no es ninguna de las anteriores se toma como "y" y vuelve a menu principal
+    menu.menu_principal()
+    return None
+
 
 def obtener_datos_producto() -> list[str]:
     """
-    Esta funcion toma los datos del producto y los valida
+    Pide los datos del producto, los valida y los devuelve como una lista
 
-    pre: no recive nada
+    pre: no recibe nada
 
     post: devuelve una lista con los datos
     """
@@ -32,33 +53,31 @@ def obtener_datos_producto() -> list[str]:
         producto = []
         nuevo_producto = input("Ingrese nuevo producto: ")
         #verifico si el producto es valido y no es demasiado largo
-        if producto_valido(nuevo_producto):
-            try:
-                clave = input("Ingrese la cantidad de días: ")
-                #verifico que la cantidad de clave sea valida
-                if int(clave) > 0 and int(clave) <= 100:
-                    print(f"El producto es: {nuevo_producto}")
-                    #verificación de que el producto ingresado es correcto
-                    ok = input("¿Los datos ingresados son correctos? (y/n): ").lower()
-                    if ok == "y":
-                        producto = [clave, nuevo_producto]
-                        return producto
-                    elif ok == "n":
-                        continue
-                    else:
-                        print("Valor ingresado incorrecto")
-            except ValueError:
-                print("Datos ingresados son incorrectos")
-        else:
-            print("El producto ingresado no es valido")
+        if not producto_valido(nuevo_producto):
+            continue
+
+        clave = input("Ingrese la cantidad de días: ")
+        #verifico que la cantidad de clave sea valida
+        if not re.match("\b([1-9][0-9]{0,2})\b", clave):
+            continue
+    
+        #verificación de que el producto ingresado es correcto
+        ok = input("¿Los datos ingresados son correctos? (y/n): ").lower()
+        if ok == "n":
+            continue
+        if ok != "y":
+            continue
+        
+        producto = [clave, nuevo_producto]
         return producto
 
 
 def datos_producto_nuevo() -> list[str]:
     """
-    Esta funcion toma los datos del producto nuevo y los valida
+    Pide la descripcion del producto, los valida, genera un ID segun el que tiene el maximo
+    y devuelve los datos como una lista.
 
-    pre: no recive nada
+    pre: no recibe nada
 
     post: devuelve una lista con los datos
     """
@@ -67,67 +86,68 @@ def datos_producto_nuevo() -> list[str]:
         producto = []
         nuevo_producto = input("Ingrese descripcion de nuevo producto: ")
         #verifico si el texto de producto es valido
-        if producto_valido(nuevo_producto):
-            clave = int(max((producto for producto in productos[0]), default=0)) +1
-            print(f"La descripcion del producto es: {nuevo_producto}")
-            #verificación de que el producto ingresado es correcto
-            ok = input("¿Los datos ingresados son correctos? (y/n): ").lower()
-            if ok == "y":
-                producto = [clave, nuevo_producto]
-                return producto
-            elif ok == "n":
-                continue
-            else:
-                print("Valor ingresado incorrecto")
-        else:
-            print("Datos ingresados son incorrectos")
-            return producto
+        if not producto_valido(nuevo_producto):
+            continue
+        
+        #busco el ID con el valor mas alto lo casteo y le sumo 1, si no tiene ningun valor toma 0 como default
+        clave = int(max((producto for producto in productos[0]), default=0)) +1
+
+        #guardo lo que quiero imprimir
+        descripcion = f"El producto es: {nuevo_producto}\n"
+        
+        #verificación de que el producto ingresado es correcto
+        ok = input(f"{descripcion}¿Los datos ingresados son correctos? (y/n): ").lower()
+        if ok == "n":
+            continue
+        if ok != "y":
+            continue
+        
+        #guardo los datos validados en la lista
+        producto = [clave, nuevo_producto]
+        return producto
 
 
 def crear_producto() -> None:
     """
-    Esta funcion toma los datos, comprueba si son validos y los agrega al json
+    Toma los datos anteriores y los agrega al json
     
     pre: no recibe nada
 
     post: no devuelve nada
     """
-    #leo el json y lo guardo en la variable productos
+    #leo el json y lo guardo en la variable mansajes
     productos = fx.leer_JSON(RUTA)
-    nuevo_producto = datos_producto_nuevo()
-    #defino la clave de la lista devuelta en la linea anterior
+    nuevo_producto = obtener_datos_producto()
+    #defino los clave desde la lista devuelta en la linea anterior
+    
     try:    
         clave = nuevo_producto[0]
         #defino los productos de la misma manera
         producto = nuevo_producto[1]
         #copruebo si el producto ya existe
-        if productos[0].get(clave) is None:
-            #creo el producto nuevo
-            productos[0][clave] = producto
-            print("producto cargado.")
-        else:
-            #compruebo si quiere reescribir el producto
-            ok = input("El ID de producto ya existe desea reemplazarlo (y/n): ").lower()
-            if ok == "y":
-                productos[0][clave] = producto
-                print("producto cargado.")
-            else:
-                #esto no se si dejarlo asi o volver a la carga de productos##############
-                print("No se creó ningun producto...")
-        #reescribo el json
+    except IndexError as e:
+        crear_producto()
+        return f"Error: {e}"
+
+    if productos[0].get(clave) is None:
+        #creo el producto nuevo
+        productos[0][clave] = producto
         with open(RUTA, "w") as archivo:
             json.dump(productos, archivo, indent=4)
-        menu.menu_producto()
-    except IndexError as e:
-        print(f"Error: {e}")
-        menu.menu_producto()
-    except FileNotFoundError:
-        print("No se encontró el archivo")
-        menu.menu_producto()
-    except KeyboardInterrupt:
-        print("Se interrumpio el proceso")
-        menu.menu_producto()
-    return None
+        return "Producto cargado."
+
+    #compruebo si quiere reescribir el producto
+    ok = input("El ID de producto ya existe quiere reemplazarlo (y/n): ").lower()
+    if ok == "n":
+        return "No se cargó ningun producto"
+    if ok != "y":
+        return "Valor ingresado ingorrecto"
+
+    #reescribo el json
+    with open(RUTA, "w") as archivo:
+        json.dump(productos, archivo, indent=4) 
+    return "Producto cargado."
+
     
 
 def actualizar_producto() -> None:
@@ -135,101 +155,91 @@ def actualizar_producto() -> None:
     Recibe el diccionario con el stock de los productos y una lista referencial con los productos disponibles
     y sus respecticas claves.
 
-    pre: no recive nada
+    pre: no recibe nada
 
     post: devuelve un dicccionario
     """
     ver_productos()
-    #obtengo el menssaje nuevo
+    #leo el json
+    productos = fx.leer_JSON(RUTA)
+    #obtengo el producto nuevo
     nuevo_producto = obtener_datos_producto()
-    try:    
+
+    try: ############# verifica el uso del try, los try van donde sabes que va a fallar tu codigo 
         #defino los clave desde la lista devuelta en la linea anterior
         clave = nuevo_producto[0]
         #defino los productos de la misma manera
         producto = nuevo_producto[1]
-        #leo el json
-        productos = fx.leer_JSON(RUTA)
-        #compruebo que la clave existe
-        while True:    
-            if productos[0].get(clave) is None:
-                #compruebo si quiere crear el producto
-                ok = input("El ID de producto no existe, desea crearlo (y/n): ").lower()
-                if ok == "y":
-                    productos[0][clave] = producto
-                    print("producto cargado.")
-                    break
-                elif ok == "n":
-                    #esto no se si dejarlo asi o volver a la carga de productos##############
-                    print("No se creó ningun producto...")
-                    break
-                else:
-                    print("Opcion incorrecta")
-            else:
-                #actualizo el valor del producto
-                productos[0][clave] = producto
-                print("producto cargado.")
-                break
+    except IndexError as e:
+        return f"Error: {e}"
+
+    #comparo para ver si la clave(los clave) existen en el json
+    while True:
+        #busco el producto
+        if productos[0].get(clave) is None:
+            #al no encontrarse, pregunto si quiere crear el producto############ 
+            ok = input("El ID de producto no existe, desea crearlo (y/n): ").lower()
+            if ok == "n":
+                continue        
+            if ok != "y":
+                continue
+            productos[0][clave] = producto
+            with open(RUTA, "w") as archivo:
+                json.dump(productos, archivo, indent=4)
+            return "Producto cargado"
+
+    
+        #actualizo el valor del producto
+        productos[0][clave] = producto
+    
         #vuelvo a cargar todo en el json
         with open(RUTA, "w") as archivo:
             json.dump(productos, archivo, indent=4)
-        menu.menu_producto()
-    except IndexError as e:
-        print(f"Error: {e}")
-        actualizar_producto()
-    except FileNotFoundError:
-        print("No se encontró el archivo")
-        menu.menu_producto()
-    except KeyboardInterrupt:
-        print("Se interrumpio el proceso")
-        menu.menu_producto()
-    return None
+        return "Producto cargado."
 
 
 def borrar_producto():
     """
     Busca el producto por el Id ingresado por el usuario y lo elimina
 
-    pre: no recive nada
+    pre: no recibe nada
 
     prost: no devuelve nada
     """
     ver_productos()
-    try:
-        clave = input("Ingrese la clave de producto: ")
-        #verifico que la clave sea valida
-        if int(clave) > 0 and int(clave) <= 1000:
-            #leo el json
-            productos = fx.leer_JSON(RUTA)
-            #obtengo la clave y verifico que existen en el json
-            if productos[0].get(clave) is None:
-                print("Producto no encontrado")
-            else:
-                #imprimo para verificar si es correcto
-                print(productos[0][clave])
-                ok = input("Este es el producto que desea eliminar? (y/n): ").lower()
-                if ok == "y":
-                    del productos[0][clave]
-                    # Vuelvo a cargar todo en el JSON
-                    with open(RUTA, "w") as archivo:
-                        json.dump(productos, archivo, indent=4)
-                    print("producto eliminado.")
-                    menu.menu_producto()
-                else:
-                    print("producto no eliminado")
-                    menu.menu_producto()
-        else:
-            print("Número ingresado fuera de rango")
-    except ValueError:
-        print("El valor ingresado es invalido")
-    except IndexError as e:
-        print(f"Error: {e}")
-        menu.menu_producto()
-    except FileNotFoundError:
-        print("No se encontró el archivo")
-        menu.menu_producto()
-    except KeyboardInterrupt:
-        print("Se interrumpio el proceso")
-        menu.menu_producto()
+    #defino los clave desde la lista devuelta en la linea anterior
+    clave = input("Ingrese la cantidad de días: ") ######################## upa acá no puede dar error, cuando se castea un input y ese casteo no se puede hacer, eso genera un error
+    #verifico que la cantidad de clave sea valida
+    if not re.match("\b([1-9][0-9]{0,2})\b", clave):####################### trata de usar retorno rapido y no usar los ifs en flecha ######cambie el >1 <100 por una expresion regular
+        return "Clave invalida"    
+        
+    #leo el json
+    productos = fx.leer_JSON(RUTA)
+
+    producto = productos[0].get(clave)
+            
+    #comparo para ver si la clave(los clave) existen en el json
+    if producto is None:
+    #si no encuentra ningun producto
+        volver_menu()
+        return "Producto no encontrado" ### tenemos que devolver cosas no printear cosas 
+
+    print(producto)
+    ok = input("Es este el producto que desea eliminar? (y/n): ").lower()
+    if ok == "n":
+        return "No se modificó ningun producto"        
+
+    if ok != "y":
+        volver_menu()
+        return "Valor incorrecto"
+
+    #borro el producto
+    del productos[0][clave]
+        
+    # Vuelvo a cargar todo en el JSON
+    with open(RUTA, "w") as archivo:
+        json.dump(productos, archivo, indent=4)
+        return "Producto eliminado."
     return None
 
 
@@ -248,7 +258,7 @@ def ver_productos():
 
 
 
-def ver_producto() -> None:
+def ver_producto() -> str:
     """
     Muestra en pantalla el producto con el id ingresado por teclado
 
@@ -257,20 +267,12 @@ def ver_producto() -> None:
     post: no devuelve nada
     """
     productos = fx.leer_JSON(RUTA)
-    try:
-        clave = input("Ingrese la clave de producto: ")
-        #verifico que la clave de producto sea valida
-        if int(clave) > 0 and int(clave) <= 1000:
-            #obtengo la clave y verifico que existen en el json
-            try:
-                if productos[0].get(clave) is None:
-                    print("Clave de producto no encontrada")
-                else:
-                    print(f"clave: {clave}- producto: {productos[0][clave]}")
-            except KeyError as e:
-                print(f"Error: {e}")
-        else:
-            print("La clave ingresada no es valida.")
-    except ValueError:
-        print("El valor ingresado es invalido")
-    return None
+    clave = input("Ingrese la cantidad de días: ") ############ lo mismo acá que en la anterior función 
+    #verifico que la cantidad de clave sea valida
+    if not re.match("\b([1-9][0-9]{0,2})\b", clave):
+        return "El nomero ingresado no es válido"
+    
+    if productos[0].get(clave) is None:
+        return "Producto no encontrado"
+
+    return f"clave: {clave}- producto: {productos[0][clave]}"
