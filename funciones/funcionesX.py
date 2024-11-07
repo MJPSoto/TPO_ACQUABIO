@@ -2,7 +2,7 @@ from tabulate import tabulate
 from collections.abc import Sequence
 import json
 import os
-
+from menues import menues as menu
 
 def clear_console() -> None:
     """
@@ -47,3 +47,23 @@ def leer_JSON(path: str) -> None:
     except (FileNotFoundError, json.JSONDecodeError):
         clientes = []
     return clientes
+
+def volver_menu(mensaje: str,funtion_no,funtion_si = None)-> None:
+    """
+    Pregunta si quiere volver al menú. Te lleva al menú principal si ingresa "y" y te lleva al menu mensajes
+    si ingresa "n".
+    pre: Esta función recibe como parametro una función y un mensaje en formato str
+    post: no devuelve nada
+    """
+    opciones = {
+        "y": funtion_si,
+        "n": funtion_no,
+    }
+    try:
+        option = input(mensaje).strip().lower()
+    except KeyboardInterrupt:
+        print("\nno se permite interrupciones")
+        volver_menu("Quiere volver al menu principal? (Y/N): ", funtion_no, funtion_si)
+    seleccion = opciones.get(option, funtion_no)
+    if seleccion:
+        seleccion() 
