@@ -1,12 +1,42 @@
 [
     {
-        "id": 1,
-        "nombre": "hola asd",
-        "telefono": "1231231231",
+        "id": 2,
+        "nombre": "Mateo",
+        "telefono": "1122334455",
         "ciudad": {
             "7167": "Pinamar"
         },
-        "direccion": "foca 20",
-        "fecha_compra": "2020/02/02"
+        "direccion": "rio",
+        "fecha_compra": "2024/06/08"
+    },
+    {
+        "id": 3,
+        "nombre": "Aron lovey ",
+        "telefono": "2454541555",
+        "ciudad": {
+            "7167": "Pinamar"
+        },
+        "direccion": "casa de aron",
+        "fecha_compra": "2024/06/08"
+    },
+    {
+        "id": 1,
+        "nombre": "Agus villavicencio",
+        "telefono": "2254122658",
+        "ciudad": {
+            "7167": "Pinamar"
+        },
+        "direccion": "Casa de agus",
+        "fecha_compra": "2024/08/08"
+    },
+    {
+        "id": 4,
+        "nombre": "acs",
+        "telefono": "1112223331",
+        "ciudad": {
+            "7167": "Pinamar"
+        },
+        "direccion": "rio",
+        "fecha_compra": "2000/02/20"
     }
 ]

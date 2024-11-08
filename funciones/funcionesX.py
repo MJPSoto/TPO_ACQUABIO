@@ -1,6 +1,7 @@
 from tabulate import tabulate
 from collections.abc import Sequence
 import json
+import re
 import os
 from menues import menues as menu
 
@@ -23,7 +24,7 @@ def mostrar_opciones(dict_opciones: dict[int, str], option: int) -> None:
     data = [[key, value] for key, value in dict_opciones[option].items()]
     print(
         tabulate(
-            data, headers=["N°1", "Opción"], tablefmt="fancy_grid", stralign="center"
+            data, headers=["N°", "Opción"], tablefmt="fancy_grid", stralign="center"
         )
     )
 
@@ -67,3 +68,15 @@ def volver_menu(mensaje: str,funtion_no,funtion_si = None)-> None:
     seleccion = opciones.get(option, funtion_no)
     if seleccion:
         seleccion() 
+
+def validacion_datos(mensaje: str, mensaje_error: str, expretion: str):
+    while True:
+        try:
+            dato_verificar = input(mensaje)
+            if re.match(expretion, dato_verificar):
+                break
+            else:
+                print(mensaje_error)
+        except KeyboardInterrupt:
+            print("\nNo se permite interrupciones")
+    return dato_verificar
