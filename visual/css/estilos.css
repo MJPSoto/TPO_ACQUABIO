@@ -1,0 +1,211 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.navegator {
+    height: 90px;
+    background-color: #546F8B;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+}
+
+.navegator ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.navegator ul li {
+    margin: 0 15px;
+}
+
+.navegator ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    padding: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.navegator ul li a::after {
+    content: '';
+    display: block;
+    height: 2px;
+    background: #fff;
+    width: 0;
+    transition: width 0.3s ease-in-out;
+    position: absolute;
+    left: 0;
+    bottom: 5px;
+}
+
+.navegator ul li a:hover::after {
+    width: 100%;
+}
+
+.logo {
+    text-decoration: none;
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+    padding: 10px;
+    margin: 0 15px;
+}
+
+.logo img {
+    height: 75px;
+}
+
+.contenedor_main {
+    width: 100%;
+    padding-top: 100px; /* Evitar que el contenido quede debajo de la barra de navegación */
+}
+
+.section {
+    height: 100vh;
+    width: 100%;
+}
+
+.contenedor_contenido {
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.btn_agregar{
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #546F8B;
+    border: none;
+    color: #fff;
+    transition: all .3s ease-in-out;
+}
+.btn_agregar:hover{
+    cursor: pointer;
+    color: #fff;
+    background-color: #95c6fa;
+}
+.contendor_clientes{
+    grid-area: clientes;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.header_clientes{
+    display: flex;
+    justify-content: end;
+}
+.listaClientes{
+    border: 1px solid #111;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    width: 100%;
+}
+
+.listaClientes a{
+    text-decoration: none;
+    color: #111;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.listaClientes a:hover{
+    background-color: #7CA5CF;
+    color: #fff;
+}
+.contenedor_clientes_opciones {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+.btn{
+    padding: 15px;
+    border-radius: 5px;
+    border: none;
+    color: #fff;
+    width: 100px;
+}
+.delete{
+    background-color: rgb(202, 70, 70);
+    transition: all .3s ease-in-out;
+}
+.delete:hover{
+    background-color: rgb(174, 58, 58);
+    cursor: pointer;
+}
+.modify{
+    background-color: #688AAD;
+    transition: all .3s ease-in-out;
+}
+.modify:hover{
+    background-color: #546F8B;
+    cursor: pointer;
+}
+.contenedor_btns{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 10px;
+}
+.contenedor_persona{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 20px;
+    transition: all .4s ease-in-out;
+}
+.input_text{
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #546F8B;
+    transition: all .3s ease-in-out;
+}
+.contenedor_btn_agregar{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+}
+
+
+.contenedor_clientes_opciones button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.contenedor_clientes_opciones button:hover {
+    background-color: #0056b3;
+}
+
+.contenedor_clientes {
+    margin-top: 20px;
+}
+
+.contenedor_clientes ul {
+    list-style: none;
+    padding: 0;
+}
+
+.contenedor_clientes ul li {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+}

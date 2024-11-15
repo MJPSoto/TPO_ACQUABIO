@@ -2,256 +2,242 @@ from menues import menues as menu
 from funciones import funcionesX as fx
 import json
 import re
-
+from tabulate import tabulate
 
 RUTA = "JSON/mensajes.json"
 
 
-def mensaje_valido(texto) -> bool:
+def obtener_datos_mensaje() -> dict:
     """
-    Recibe un texto y comprueba si es válido o no.
-
-    pre: recibe un string.
-
-    post: devuelve un booleano.
+    Esta funcion toma los datos del mensaje nuevo y los valida
+    pre: no recibe nada
+    post: devuelve una lista con los datos
     """
-    # al menos cuatro caracteres, contiene letras, no es solo números ni solo espacios
-    patron = r"^(?=.*[A-Za-z])(?=.{4,})(?!^\d+$).*$"
-    return bool(re.match(patron, texto.strip()))
+    nuevo_mensaje = fx.validacion_datos(
+        "Ingrese nuevo mensaje: ",
+        "Ingrese nuevamente el mensaje",
+        r"^(?=.*[A-Za-z])(?=.{4,})(?!^\d+$).*$",
+    )
+    cantidad_dias = fx.validacion_datos(
+        "Ingrese la cantidad de días: ",
+        "Ingrese nuevamente la cantidad de dias",
+        r"\b([1-9][0-9]{0,2})\b",
+    )
+    mensaje = {cantidad_dias: nuevo_mensaje}
+    # verificación de que el mensaje ingresado es correcto
+    print(tabulate(mensaje.items(), headers=["Dias", "Mensaje"], stralign="center"))
+    fx.volver_menu(
+        "¿Los datos ingresados son correctos? (y/n): ", obtener_datos_mensaje
+    )
+    return mensaje
 
 
-def volver_menu() -> None:
-    """
-    Pregunta si desea volver al menú. Te lleva al menú principal si ingresas "y" y al menú mensajes si ingresas "n".
-
-    pre: no recibe nada.
-
-    post: no devuelve nada.
-    """
-    ok = input("¿Desea volver al menú principal? (y/n): ").lower()
-    
-    # si es "n", vuelve a mensajes
-    if ok == "n":
-        menu.menu_mensajes()
-
-    # si no es ni "n" ni "y", vuelve a ejecutar la función
-    if ok != "y":
-        volver_menu()
-    
-    # si no es ninguna de las anteriores, se toma como "y" y vuelve al menú principal
-    menu.menu_principal()
-    return None
+def validar_existencia(mensaje: list, mensajes: list) -> None:
+    if mensaje in mensajes:
+        fx.volver_menu(
+            "¿El mensaje ya existe, quiere cargar otro mensaje? (y/n): ",
+            menu.menu_mensajes,
+            crear_mensaje,
+        )
 
 
-def obtener_datos_mensaje() -> list[str]:
-    """
-    Esta función toma los datos del mensaje nuevo y los valida.
-
-    pre: no recibe nada.
-
-    post: devuelve una lista con los datos.
-    """
-    while True:
-        mensaje = []
-        nuevo_mensaje = input("Ingrese nuevo mensaje: ")
-        # verifica si el mensaje es válido y no es demasiado largo
-        if not mensaje_valido(nuevo_mensaje):
-            continue
-
-        dias = input("Ingrese la cantidad de días: ")
-        # verifica que la cantidad de días sea válida
-        if not re.match(r"\b([1-9][0-9]{0,2})\b", dias):
-            continue
-        
-        # guarda lo que quiere imprimir
-        descripcion = f"Días: {dias} - Mensaje: {nuevo_mensaje}\n"
-
-        # verificación de que el mensaje ingresado es correcto
-        ok = input(f"{descripcion}¿Los datos ingresados son correctos? (y/n): ").lower()
-        if ok == "n":
-            continue
-        if ok != "y":
-            continue
-        
-        mensaje = [dias, nuevo_mensaje]
-        return mensaje
-    
-
-def crear_mensaje() -> str:
-    """
-    Esta función toma los datos, comprueba si son válidos y los agrega al JSON.
-    
-    pre: no recibe nada.
-
-    post: no devuelve nada.
-    """
-    # lee el JSON y lo guarda en la variable mensajes
-    mensajes = fx.leer_JSON(RUTA)
-    nuevo_mensaje = obtener_datos_mensaje()
-    # define los días desde la lista devuelta en la línea anterior
-    
-    try:    
-        dias = nuevo_mensaje[0]
-        # define los mensajes de la misma manera
-        mensaje = nuevo_mensaje[1]
-    except IndexError as e:
-        crear_mensaje()
-        return f"Error: {e}"
-
-    # comprueba si el mensaje ya existe
-    if mensajes[0].get(dias) is None:
-        # crea el mensaje nuevo
-        mensajes[0][dias] = mensaje
+def cargar_archivo(datos_cargar, mensaje_excep: str, mensaje_success: str) -> None:
+    try:
         with open(RUTA, "w") as archivo:
-            json.dump(mensajes, archivo, indent=4)
-        return "Mensaje cargado."
-
-    # comprueba si desea reemplazar el mensaje
-    ok = input("El ID del mensaje ya existe, ¿quiere reemplazarlo? (y/n): ").lower()
-    if ok == "n":
-        return "No se cargó ningún mensaje."
-    if ok != "y":
-        return "Valor ingresado incorrecto."
-    
-    # crea el mensaje nuevo
-    mensajes[0][dias] = mensaje
-
-    # reescribe el JSON
-    with open(RUTA, "w") as archivo:
-        json.dump(mensajes, archivo, indent=4)
-    
-    return "Mensaje cargado."
+            json.dump(datos_cargar, archivo, indent=4)
+    except Exception:
+        print(mensaje_excep)
+    print(mensaje_success)
 
 
-def actualizar_mensaje() -> str:
+def crear_mensaje() -> None:
     """
-    Obtiene el mensaje nuevo a través de la función obtener_datos_mensaje, busca el ID 
-    que es la cantidad de días, y si está, modifica el mensaje.
-
-    pre: no recibe nada.
-
-    post: no devuelve nada.
+    Esta funcion toma los datos, comprueba si son validos y los agrega al json
+    pre: no recibe nada
+    post: no devuelve nada
     """
-    ver_mensajes()
-    # lee el JSON
+    # leo el json y lo guardo en la variable mansajes
     mensajes = fx.leer_JSON(RUTA)
-    # obtiene el mensaje nuevo
-    nuevo_mensaje = obtener_datos_mensaje()
+    mensaje = obtener_datos_mensaje()
+    key, value = list(mensaje.keys())[0], list(mensaje.values())[0]
+    validar_existencia(key, list(mensajes.keys()))
+    mensajes[key] = value
 
-    try: 
-        # define los días desde la lista devuelta en la línea anterior
-        dias = nuevo_mensaje[0]
-        # define los mensajes de la misma manera
-        mensaje = nuevo_mensaje[1]
-    except IndexError as e:
-        return f"Error: {e}"
+    cargar_archivo(
+        mensajes,
+        "No se ha podido cargar el archivo",
+        "El mensaje se cargo correctamente",
+    )
 
-    # compara para ver si el ID (los días) existe en el JSON
-    while True:
-        # busca el mensaje
-        if mensajes[0].get(dias) is None:
-            # al no encontrarse, pregunta si desea crear el mensaje
-            ok = input("El ID del mensaje no existe, ¿desea crearlo? (y/n): ").lower()
-            if ok == "n":
-                continue        
-            if ok != "y":
-                continue
-            mensajes[0][dias] = mensaje
-            with open(RUTA, "w") as archivo:
-                json.dump(mensajes, archivo, indent=4)
-            return "Mensaje cargado."
+    fx.volver_menu(
+        "¿Quiere volver a cargar otro mensaje? (y/n): ",
+        menu.menu_mensajes,
+        crear_mensaje,
+    )
 
-        # actualiza el valor del mensaje
-        mensajes[0][dias] = mensaje
-    
-        # vuelve a cargar todo en el JSON
-        with open(RUTA, "w") as archivo:
-            json.dump(mensajes, archivo, indent=4)
-        menu.menu_mensajes()
-        return "Mensaje cargado."
+
+def actualizar_mensaje() -> None:
+    """
+    Obtine el mensaje nuevo a travez de la funcion obtener_datos_mensaje, busca la dias
+    que es la cantidad de dias, y si está modifica el mensaje
+    pre: no recibe nada
+    port: no devuelve nada
+    """
+    mensajes = fx.leer_JSON(RUTA)
+    # Solicitar el ID del mensaje en días
+    id_mensaje = fx.validacion_datos(
+        "Ingrese la cantidad de días: ",
+        "Ingrese nuevamente la cantidad de dias",
+        r"\b([1-9][0-9]{0,2})\b",
+    )
+
+    mensaje = mensajes.get(id_mensaje, None)
+
+    # Si el mensaje no existe, preguntar si se desea crearlo
+    if mensaje is None:
+        fx.volver_menu(
+            "¿El mensaje no existe, desea crearlo? (y/n): ",
+            menu.menu_mensajes,
+            crear_mensaje,
+        )
+    else:
+        # Mostrar el mensaje en formato de tabla
+        print(
+            tabulate(
+                [[id_mensaje, mensaje]], headers=["Días", "Mensaje"], stralign="center"
+            )
+        )
+        nuevo_mensaje = obtener_datos_mensaje()
+        mensajes[list(nuevo_mensaje.keys())[0]] = list(nuevo_mensaje.values())[0]
+        cargar_archivo(
+            mensajes,
+            "No se ha podido cargar el archivo",
+            "El mensaje se actualizó correctamente",
+        )
+    fx.volver_menu(
+        "¿Quiere actualizar otro mensaje? (y/n): ",
+        menu.menu_mensajes,
+        actualizar_mensaje,
+    )
+
+
+def obtener_mensaje_x_id(mensajes: list) -> dict:
+    id_mensaje = fx.validacion_datos(
+        "Ingrese la cantidad de días: ",
+        "Ingrese nuevamente la cantidad de dias",
+        r"\b([1-9][0-9]{0,2})\b",
+    )
+
+    mensaje = mensajes.get(id_mensaje, None)
+
+    # Si el mensaje no existe, preguntar si se desea crearlo
+    if mensaje is None:
+        fx.volver_menu(
+            "¿El mensaje no existe, desea crearlo? (y/n): ",
+            menu.menu_mensajes,
+            crear_mensaje,
+        )
+    else:
+        return {id_mensaje: mensaje}
 
 
 def borrar_mensaje() -> str:
     """
-    Lee el JSON encontrando el mensaje que se quiere borrar mediante el ID, y vuelve a cargar
-    el JSON con los mensajes excepto el eliminado.
-
-    pre: no recibe nada.
-
-    post: no devuelve nada.
+    Lee el json encontrando el mensaje que se quiere borrar mediante el Id, vuelve a cargar
+    el json con los mensajes excepto el eliminado.
+    pre: no recibe nada
+    prost: no devuelve nada
     """
-    ver_mensajes()
-    # define los días desde la lista devuelta en la línea anterior
-    dias = input("Ingrese la cantidad de días: ") 
-    # verifica que la cantidad de días sea válida
-    if not re.match(r"\b([1-9][0-9]{0,2})\b", dias):
-        return "Cantidad de días inválida."
-        
-    # lee el JSON
+    # leo el json
     mensajes = fx.leer_JSON(RUTA)
+    mensaje = obtener_mensaje_x_id(mensajes)
+    print(
+        tabulate(
+            mensaje.items(),
+            headers=["Dias", "Mensaje"],
+            tablefmt="fancy_grid",
+            stralign="center",
+        )
+    )
 
-    mensaje = mensajes[0].get(dias)
-            
-    # compara para ver si el ID (los días) existe en el JSON
-    if mensaje is None:
-        volver_menu()
-        return "Mensaje no encontrado." 
+    # confirmar eliminación del mensaje
+    fx.volver_menu(
+        "¿Está seguro que quiere eliminar el mensaje? (y/n): ",
+        menu.menu_mensajes,
+    )
+    # borro el mensaje
+    del mensajes[list(mensaje.keys())[0]]
 
-    ok = input(f"{mensajes[dias]}\n¿Es este el mensaje que desea eliminar? (y/n): ").lower()
-    if ok == "n":
-        volver_menu()
-        return "No se modificó ningún mensaje."        
+    # Vuelvo a cargar todo en el JSON
+    cargar_archivo(
+        mensajes,
+        "No se ha podido cargar el archivo",
+        "El mensaje se borró correctamente",
+    )
+    fx.volver_menu(
+        "¿Quiere borrar otro mensaje? (y/n): ",
+        menu.menu_mensajes,
+        borrar_mensaje,
+    )
 
-    if ok != "y":
-        volver_menu()
-        return "Valor incorrecto."
-
-    # borra el mensaje
-    del mensajes[0][dias]
-        
-    # vuelve a cargar todo en el JSON
-    with open(RUTA, "w") as archivo:
-        json.dump(mensajes, archivo, indent=4)
-    return "Mensaje eliminado."
-        
 
 def ver_mensajes() -> None:
     """
-    Lee el JSON e imprime los mensajes en pantalla.
-
-    pre: no recibe nada.
-
-    post: no devuelve nada.
-    """
-    try:
-        # lee el JSON
-        mensajes = fx.leer_JSON(RUTA)
-        # recorre el diccionario e imprime por clave y valor
-        for key, value in mensajes[0].items():
-            print(f"Días: {key} - Mensaje: {value}")
-        # pregunta si desea volver al menú
-        volver_menu()
-    except IndexError as e:
-        print(f"Error: {e}")
-    return None
-
-
-def ver_mensaje() -> str:
-    """
-    Busca un mensaje mediante el ID. Si lo encuentra, lo muestra en pantalla.
-
-    pre: no recibe nada.
-
-    post: no devuelve nada.
+    Lee el json, e imprime los mensajes en pantalla
+    pre: no recibe nada
+    post: no devuelve nada
     """
     mensajes = fx.leer_JSON(RUTA)
-    dias = input("Ingrese la cantidad de días: ")  
-    # verifica que la cantidad de días sea válida
-    if not re.match(r"\b([1-9][0-9]{0,2})\b", dias):
-        return "El número ingresado no es válido."
-    
-    if mensajes[0].get(dias) is None:
-        return "Mensaje no encontrado."
 
-    return f"Días: {dias} - Mensaje: {mensajes[0][dias]}"
+    # Verificar si se encontraron mensajes
+    if not mensajes:
+        print("No se encontraron mensajes.")
+        return menu.menu_mensajes()
 
+    # Muestro los mensajes existentes
+    print(
+        tabulate(
+            list(mensajes.items()),
+            headers=["Dias", "Mensaje"],
+            tablefmt="fancy_grid",
+            stralign="center",
+        )
+    )
+    fx.volver_menu(
+        "Quiere volver al menu (Y/N): ",
+        menu.menu_mensajes,
+        menu.menu_principal,
+    )
+
+
+def ver_mensaje() -> None:
+    """
+    Busca un mensaje mediante el id, si lo encuentra lo mustra en pantalla
+    pre: no recibe nada
+    post: no devuelve nada
+    """
+    mensajes = fx.leer_JSON(RUTA)
+    id_mensaje = fx.validacion_datos(
+        "Ingrese la cantidad de días: ",
+        "Ingrese nuevamente la cantidad de dias",
+        r"\b([1-9][0-9]{0,2})\b",
+    )
+
+    mensaje = mensajes.get(id_mensaje, None)
+    if mensaje:
+        mensaje = {id_mensaje: mensaje}
+        print(
+            tabulate(
+                mensaje.items(),
+                headers=["Dias", "Mensaje"],
+                tablefmt="fancy_grid",
+                stralign="center",
+            )
+        )
+    else:
+        print("No se ha encontrado el mensaje")
+    fx.volver_menu(
+        "Quiere volver al menu (Y/N): ",
+        menu.menu_mensajes,
+        menu.menu_principal,
+    )

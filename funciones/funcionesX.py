@@ -1,47 +1,82 @@
 from tabulate import tabulate
-import os
+from collections.abc import Sequence
 import json
+import re
+import os
+from menues import menues as menu
 
 def clear_console() -> None:
     """
-    contrato: esta función limpia la consola
-    pre: esta función no obtiene ningun parametro
-    post: esta función no devuelve nada None
+    Está función limpia la consola 
+    pre: esta función no recibe ningun parametro
+    post: esta función no devuelve nada
     """
     os.system("cls" if os.name == "nt" else "clear")
 
 
-def mostrar_menu(key: int, dict_opciones: dict) -> None:
-    for i, value in enumerate(dict_opciones[key]):
-        print(f"{i+1}. {value}")
-    return None
-
-
-def mostrar_opciones(dict_opciones: dict, option: int) -> None:
+def mostrar_opciones(dict_opciones: dict[int, str], option: int) -> None:
+    """
+    Está función muestra las opciones disponibles de cada menu
+    Pre: Está función no recibe 2 parametros, uno es un diccionario que contiene las opciones y
+    el otro es el que muestra el diccionario
+    Post: Está función no devuelve nada
+    """
+    data = [[key, value] for key, value in dict_opciones[option].items()]
     print(
         tabulate(
-            [[f"{i+1}. {valor}" for i, valor in enumerate(dict_opciones[option].values())]],
-            tablefmt="fancy_grid",
+            data, headers=["N°", "Opción"], tablefmt="fancy_grid", stralign="center"
         )
     )
-    return None
 
-#aca paso la funcion leer json para hacer los llamados en general
-def leer_JSON(ruta):
+def mostrar_logo() -> None:
     """
-    esta funcion lee la el archivo dela ruta y genera una lista con los datos
-
-    pre: esta funcion recive como parametro una ruta de archivo de json
-
-    post: si en cuentra el archivo devuelve una lista de diccionarios 
-    y sino devielve una lista vacia
+    Está función muestra el logo del programa
+    Pre: Está función no recibe ningun parametro
+    Post: Está función no devuelve nada
     """
-    archivo_path = ruta
+    print(
+        tabulate(
+            [["Sistema de avisos ACQUABIO"], ["by Cocucha"]],
+            colalign=("center",),
+        )
+    )
+
+def leer_JSON(path: str) -> None:
     try:
-        with open(archivo_path, "r") as archivo:
-            datos = json.load(archivo)
+        with open(path, "r") as archivo:
+            clientes = json.load(archivo)
     except (FileNotFoundError, json.JSONDecodeError):
-        datos = []
-    return datos
+        clientes = []
+    return clientes
 
+def volver_menu(mensaje: str,funtion_no,funtion_si = None)-> None:
+    """
+    Pregunta si quiere volver al menú. Te lleva al menú principal si ingresa "y" y te lleva al menu mensajes
+    si ingresa "n".
+    pre: Esta función recibe como parametro una función y un mensaje en formato str
+    post: no devuelve nada
+    """
+    opciones = {
+        "y": funtion_si,
+        "n": funtion_no,
+    }
+    try:
+        option = input(mensaje).strip().lower()
+    except KeyboardInterrupt:
+        print("\nno se permite interrupciones")
+        volver_menu("Quiere volver al menu principal? (Y/N): ", funtion_no, funtion_si)
+    seleccion = opciones.get(option, funtion_no)
+    if seleccion:
+        seleccion() 
 
+def validacion_datos(mensaje: str, mensaje_error: str, expretion: str):
+    while True:
+        try:
+            dato_verificar = input(mensaje)
+            if re.match(expretion, dato_verificar):
+                break
+            else:
+                print(mensaje_error)
+        except KeyboardInterrupt:
+            print("\nNo se permite interrupciones")
+    return dato_verificar

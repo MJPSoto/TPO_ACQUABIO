@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Inicio</title>
+        <link rel="stylesheet" href="../css/estilos.css">
+    </head>
+    <body>
+        <nav class="navegator">
+            <a href="#" class="logo"><img src="../imagenes/logo.png" alt=""></a>
+            <ul>
+                <li><a href="#clientes">Clientes</a></li>
+                <li><a href="#productos">Productos</a></li>
+                <li><a href="#mensajes">Mensajes</a></li>
+            </ul>
+        </nav>
+        
+        <main class="contenedor_main">
+            <section class="section clientes" id="clientes">
+                <div class="contenedor_contenido">
+                    <h2>Listado de Clientes</h2>
+                    <div class="listaClientes" id="contenedorClientes">
+                    </div>
+                </div>
+                <div class="contenedor_contenido">
+                    <h2>Agregar un cliente</h2>
+                        <form action="#" class="listaClientes">
+                            <input class="input_text" type="text" placeholder="Ingrese el nombre del cliente.." required>
+                            <input class="input_text" type="phone" placeholder="Ingrese el telefono del cliente.." required>
+                            <input class="input_text" type="text" placeholder="Ingrese la dirección del cliente.." required>
+                            <input class="input_text" type="text" placeholder="Ingrese la localidad del cliente.." required>
+                            <div class="contenedor_btn_agregar">
+                                <input class="btn_agregar" type="submit" id="btnAgregar" value="Agregar Cliente"></input>
+                            </div>
+                        </form>
+                </div>
+            </section>
+            
+            <section class="section productos" id="productos">
+                <div class="contenedor_contenido">
+                    <h1>Productos</h1>
+                </div>
+            </section>
+        
+            <section class="section mensajes" id="mensajes">
+                <div class="contenedor_contenido">
+                    <h1>Mensajes</h1>
+                </div>
+            </section>
+        </main>
+        <script src="../js/datos.js"></script>
+    </body>
+</html>
