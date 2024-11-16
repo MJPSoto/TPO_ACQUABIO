@@ -59,22 +59,22 @@ def obtener_datos_cliente() -> dict:
     post: Esta función devuelve un diccionario con los datos del cliente
     """
     ide = crear_id_cliente()
-    nombre = validacion_datos(
+    nombre = fx.validacion_datos(
         "Ingrese su nombre y apellido: ",
         "Ingrese nuevamente el nombre",
         "[A-Za-z\s]{3,}$",
     )
-    telefono = validacion_datos(
+    telefono = fx.validacion_datos(
         "Ingrese su numero de telefono. Ejemplo: 1122334455: ",
         "Ingrese nuevamente el telefono.",
         "[0-9\s]{10}$",
     )
-    codigo_postal = validacion_datos(
+    codigo_postal = fx.validacion_datos(
         "Ingrese su codigo postal: ",
         "Ingrese nuevamente su codigo postal.",
         "[0-9\s]{3,}$",
     )
-    direccion = validacion_datos(
+    direccion = fx.validacion_datos(
         "Ingrese su direccion: ",
         "Ingrese nuevamente su direccion.",
         "^[a-zA-Z0-9\s]{4,}$",
@@ -104,9 +104,7 @@ def cargar_archivo(datos_cambiar, access_mode: str):
 def crear_nuevo_cliente() -> None:
     """
     Está función carga un nuevo cliente al json de clientes
-
     pre: Está función no necesita parametros
-
     post: Esta función Guarda un nuevo cliente en el archivo clientes.json.
     """
     # Solicitar datos del cliente
