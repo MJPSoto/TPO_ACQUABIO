@@ -51,9 +51,12 @@ def crear_mensaje() -> None:
     """
     #leo el json y lo guardo en la variable mansajes
     mensajes = fx.leer_JSON(RUTA)
+    mensaje = obtener_mensaje()
+    cantidad_dias = obtener_cantidad_dias()
+
     #recorro los mensajes para ver si esta la key ya existe
     for key in mensajes.keys():
-        if key != mensaje[0]:
+        if key != mensaje:
             mensajes[mensaje[0]] = mensaje[1]
     with open(RUTA, "w") as archivo:
         json.dump(mensajes, archivo, indent=4)

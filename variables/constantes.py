@@ -17,7 +17,8 @@ dict_opciones = {
         1: "Administrar clientes",
         2: "Administrar mensajes",
         3: "Administrar productos",
-        4: "Salir",
+        4: "Enviar mensajes",
+        5: "Salir",
     },
     1: {
         1: "Ingresar un nuevo cliente",

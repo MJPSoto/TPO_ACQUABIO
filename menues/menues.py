@@ -109,4 +109,6 @@ def menu_principal() -> None:
         case 3:
             menu_producto()
         case 4:
+            fx.enviar_mensaje()
+        case 5:
             exit()

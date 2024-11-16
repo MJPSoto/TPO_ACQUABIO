@@ -1,7 +1,10 @@
 from tabulate import tabulate
-from collections.abc import Sequence
 import json
 import os
+import re
+#import pywhatkit
+#import pyautogui
+from datetime import datetime
 
 
 def clear_console() -> None:
@@ -42,8 +45,61 @@ def mostrar_logo() -> None:
 
 def leer_JSON(path: str) -> None:
     try:
-        with open(path, "r") as archivo:
+        with open(path, "rt", encoding="utf-8-sig") as archivo:
             clientes = json.load(archivo)
     except (FileNotFoundError, json.JSONDecodeError):
-        clientes = []
+        clientes = {}
     return clientes
+
+def volver_menu(mensaje: str,funtion_no,funtion_si = None)-> None:
+    """
+    Pregunta si quiere volver al menú. Te lleva al menú principal si ingresa "y" y te lleva al menu mensajes
+    si ingresa "n".
+    pre: Esta función recibe como parametro una función y un mensaje en formato str
+    post: no devuelve nada
+    """
+    opciones = {
+        "y": funtion_si,
+        "n": funtion_no,
+    }
+    try:
+        option = input(mensaje).strip().lower()
+    except KeyboardInterrupt:
+        print("\nno se permite interrupciones")
+        volver_menu("Quiere volver al menu principal? (Y/N): ", funtion_no, funtion_si)
+    seleccion = opciones.get(option, funtion_no)
+    if seleccion:
+        seleccion() 
+
+def validacion_datos(mensaje: str, mensaje_error: str, expretion: str):
+    while True:
+        try:
+            dato_verificar = input(mensaje)
+            if re.match(expretion, dato_verificar):
+                break
+            else:
+                print(mensaje_error)
+        except KeyboardInterrupt:
+            print("\nNo se permite interrupciones")
+    return dato_verificar
+"""
+def enviar_mensaje():
+    mensaje = "Se necesita cambio de sal"
+    fecha_actual = datetime.now().date()
+    datos_clientes = leer_JSON("JSON/clientes.json")
+    localidades = leer_JSON("JSON/ciudades.json")
+    for datos in datos_clientes:
+        print(localidades.values())
+        if datos["ciudad"].values() in localidades.values():
+            fecha_compra = datos["fecha_compra"]
+            telefono = datos["telefono"]
+            nombre = datos["nombre"]
+            diretion = datos["direccion"]
+            print(fecha_actual)
+
+    #numero = "+5492235216481"
+    #pywhatkit.sendwhatmsg(numero, mensaje,16,52)
+    #print("Los mensajes se enviaron correctamente.")
+
+    return 
+"""
