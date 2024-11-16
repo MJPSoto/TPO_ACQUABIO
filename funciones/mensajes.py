@@ -41,13 +41,23 @@ def validar_existencia(mensaje: list, mensajes: list) -> None:
         )
 
 
-def cargar_archivo(datos_cargar, mensaje_excep: str, mensaje_success: str) -> None:
+def cargar_archivo(datos_cambiar, access_mode: str):
     try:
-        with open(RUTA, "w") as archivo:
-            json.dump(datos_cargar, archivo, indent=4)
+        with open(RUTA, access_mode, encoding="utf-8") as archivo:
+            json.dump(datos_cambiar, archivo, indent=4, ensure_ascii=False)
     except Exception:
-        print(mensaje_excep)
-    print(mensaje_success)
+        print("Error al escribir el archivo mensajes.")
+
+
+def crear_id_mensaje() -> tuple:
+    """Esta funcion lee el JSON y guarda los datos en una lista. Verifica si hay algun valor en "id"
+    Si no lo hay, guardamos 0 en la lista, caso contrario, el mayor dato encontrado en "id".
+    Retornamos
+
+    Returns:
+        bool: Retorna una tupla con el id
+    """
+    return max(list(map(int, list(fx.leer_JSON(RUTA).keys()))), default=0) + 1
 
 
 def crear_mensaje() -> None:
@@ -57,19 +67,24 @@ def crear_mensaje() -> None:
     post: no devuelve nada
     """
     # leo el json y lo guardo en la variable mansajes
-    mensajes = fx.leer_JSON(RUTA)
-    mensaje = obtener_mensaje()
-    cantidad_dias = obtener_cantidad_dias()
 
-    #recorro los mensajes para ver si esta la key ya existe
-    for key in mensajes.keys():
-        if key != mensaje:
-            mensajes[mensaje[0]] = mensaje[1]
-    with open(RUTA, "w") as archivo:
-        json.dump(mensajes, archivo, indent=4)
-    print("Mensaje cargado.")
-    menu.menu_mensajes()
-    return None
+    # key, value = list(mensaje.keys())[0], list(mensaje.values())[0]
+    # validar_existencia(key, list(mensajes.keys()))
+    # mensajes[key] = value
+    
+
+    dict_mensajes = {key: value for key, value in fx.leer_JSON(RUTA).items()}
+    mensaje = obtener_datos_mensaje()
+    id_mensaje = crear_id_mensaje()
+    dict_mensajes[id_mensaje] = mensaje
+    cargar_archivo(dict_mensajes, "wt")
+    print("Mensaje agregado exitosamente.")
+
+    fx.volver_menu(
+        "¿Quiere volver a cargar otro mensaje? (y/n): ",
+        menu.menu_mensajes,
+        crear_mensaje,
+    )
 
 
 def actualizar_mensaje() -> None:
@@ -87,7 +102,7 @@ def actualizar_mensaje() -> None:
         r"\b([1-9][0-9]{0,2})\b",
     )
 
-    mensaje = mensajes[0].get(id_mensaje, None)
+    mensaje = mensajes.get(id_mensaje, None)
 
     # Si el mensaje no existe, preguntar si se desea crearlo
     if mensaje is None:
@@ -104,7 +119,7 @@ def actualizar_mensaje() -> None:
             )
         )
         nuevo_mensaje = obtener_datos_mensaje()
-        mensajes[0][list(nuevo_mensaje.keys())[0]] = list(nuevo_mensaje.values())[0]
+        mensajes[list(nuevo_mensaje.keys())[0]] = list(nuevo_mensaje.values())[0]
         cargar_archivo(
             mensajes,
             "No se ha podido cargar el archivo",
@@ -124,7 +139,7 @@ def obtener_mensaje_x_id(mensajes: list) -> dict:
         r"\b([1-9][0-9]{0,2})\b",
     )
 
-    mensaje = mensajes[0].get(id_mensaje, None)
+    mensaje = mensajes.get(id_mensaje, None)
 
     # Si el mensaje no existe, preguntar si se desea crearlo
     if mensaje is None:
@@ -162,7 +177,7 @@ def borrar_mensaje() -> str:
         menu.menu_mensajes,
     )
     # borro el mensaje
-    del mensajes[0][list(mensaje.keys())[0]]
+    del mensajes[list(mensaje.keys())[0]]
 
     # Vuelvo a cargar todo en el JSON
     cargar_archivo(
@@ -193,7 +208,7 @@ def ver_mensajes() -> None:
     # Muestro los mensajes existentes
     print(
         tabulate(
-            list(mensajes[0].items()),
+            list(mensajes.items()),
             headers=["Dias", "Mensaje"],
             tablefmt="fancy_grid",
             stralign="center",
@@ -219,7 +234,7 @@ def ver_mensaje() -> None:
         r"\b([1-9][0-9]{0,2})\b",
     )
 
-    mensaje = mensajes[0].get(id_mensaje, None)
+    mensaje = mensajes.get(id_mensaje, None)
     if mensaje:
         mensaje = {id_mensaje: mensaje}
         print(

@@ -1,12 +1,9 @@
 from tabulate import tabulate
+from collections.abc import Sequence
 import json
 import re
 import os
-import re
-#import pywhatkit
-#import pyautogui
-from datetime import datetime
-
+from menues import menues as menu
 
 def clear_console() -> None:
     """
@@ -46,10 +43,10 @@ def mostrar_logo() -> None:
 
 def leer_JSON(path: str) -> None:
     try:
-        with open(path, "rt", encoding="utf-8-sig") as archivo:
+        with open(path, "r") as archivo:
             clientes = json.load(archivo)
     except (FileNotFoundError, json.JSONDecodeError):
-        clientes = {}
+        clientes = []
     return clientes
 
 def volver_menu(mensaje: str,funtion_no,funtion_si = None)-> None:
@@ -83,24 +80,3 @@ def validacion_datos(mensaje: str, mensaje_error: str, expretion: str):
         except KeyboardInterrupt:
             print("\nNo se permite interrupciones")
     return dato_verificar
-"""
-def enviar_mensaje():
-    mensaje = "Se necesita cambio de sal"
-    fecha_actual = datetime.now().date()
-    datos_clientes = leer_JSON("JSON/clientes.json")
-    localidades = leer_JSON("JSON/ciudades.json")
-    for datos in datos_clientes:
-        print(localidades.values())
-        if datos["ciudad"].values() in localidades.values():
-            fecha_compra = datos["fecha_compra"]
-            telefono = datos["telefono"]
-            nombre = datos["nombre"]
-            diretion = datos["direccion"]
-            print(fecha_actual)
-
-    #numero = "+5492235216481"
-    #pywhatkit.sendwhatmsg(numero, mensaje,16,52)
-    #print("Los mensajes se enviaron correctamente.")
-
-    return 
-"""
