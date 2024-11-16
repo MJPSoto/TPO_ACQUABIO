@@ -30,6 +30,7 @@ def ingresar_fecha_compra() -> str:
             break
     return date
 
+
 def verificar_ciudades_disponibles(codigo_postal: str) -> str:
     localidades = fx.leer_JSON("JSON/ciudades.json")
     key_value = {"100100": "Otro"}
@@ -50,6 +51,26 @@ def crear_id_cliente() -> tuple:
     return max(list(map(int, list(fx.leer_JSON(RUTA).keys()))), default=0) + 1
 
 
+def verificar_celular_repetido() -> str:
+    """Se verifica si un número está repetido o no en el dato "telefono" en clientes.JSON.
+    Returns:
+        str: Retorna el número de teléfono si no está repetido.
+    """
+    clientes = fx.leer_JSON(RUTA)
+    telefono_cliente = fx.validacion_datos(
+        "Ingrese su número de teléfono. Ejemplo: 1122334455: ",
+        "Ingrese nuevamente el teléfono.",
+        "[0-9\s]{10}$",
+    )
+
+    if clientes:
+        for cliente in clientes.values():
+            if cliente["telefono"] == telefono_cliente:
+                print("El número ingresado ya está cargado a otro cliente.")
+                return verificar_celular_repetido()
+    return telefono_cliente
+
+
 def obtener_datos_cliente() -> dict:
     """
     Está función obtiene los datos del cliente por consola
@@ -64,11 +85,9 @@ def obtener_datos_cliente() -> dict:
         "Ingrese nuevamente el nombre",
         "[A-Za-z\s]{3,}$",
     )
-    telefono = fx.validacion_datos(
-        "Ingrese su numero de telefono. Ejemplo: 1122334455: ",
-        "Ingrese nuevamente el telefono.",
-        "[0-9\s]{10}$",
-    )
+
+    telefono = verificar_celular_repetido()
+
     codigo_postal = fx.validacion_datos(
         "Ingrese su codigo postal: ",
         "Ingrese nuevamente su codigo postal.",
@@ -94,12 +113,14 @@ def obtener_datos_cliente() -> dict:
     }
     return nuevo_cliente
 
+
 def cargar_archivo(datos_cambiar, access_mode: str):
     try:
-        with open(RUTA, access_mode, encoding='utf-8') as archivo:
+        with open(RUTA, access_mode, encoding="utf-8") as archivo:
             json.dump(datos_cambiar, archivo, indent=4, ensure_ascii=False)
     except Exception:
         print("Error al escribir el archivo clientes.")
+
 
 def crear_nuevo_cliente() -> None:
     """
@@ -125,8 +146,8 @@ def crear_nuevo_cliente() -> None:
     """
     dict_clientes = {key: value for key, value in fx.leer_JSON(RUTA).items()}
     datos_cliente = obtener_datos_cliente()
-    id_cliente = datos_cliente.get('id', 0)
-    del(datos_cliente['id'])
+    id_cliente = datos_cliente.get("id", 0)
+    del datos_cliente["id"]
     dict_clientes[id_cliente] = datos_cliente
     cargar_archivo(dict_clientes, "wt")
     print("Cliente agregado exitosamente.")
@@ -161,14 +182,36 @@ def actualizar_datos_cliente() -> None:
         menu.menu_clientes,
     )
 
-    datos_cliente = obtener_datos_cliente()
-    del(datos_cliente['id'])
+    keys = {i + 1: key for i, key in enumerate(datos_cliente.keys())}
+
+    print(
+        tabulate(
+            keys.items(),
+            headers=["Nro", "Opción"],
+            tablefmt="fancy_grid",
+            stralign="center",
+        )
+    )
+
+    while True:
+        try:
+            option = int(input("Seleccione una de las siguiente opciones: "))
+            if option in keys.keys():
+                break
+        except ValueError as e:
+            print(e)
+    # Opción ingresada y validada
+    value_keys = keys[option]
+
+    dato_modificar = validations[value_keys]()
+
+    datos_cliente[value_keys] = dato_modificar
     mostrar_datos(datos_cliente)
     fx.volver_menu(
-        "Estan bien los datos? (Y/N): ",
-        obtener_datos_cliente,
+        "El cambio es correcto? (Y/N): ",
+        menu.menu_clientes,
     )
-    
+
     dict_clientes[str(id_cliente)] = datos_cliente
 
     # Guardar los datos actualizados en el archivo
@@ -180,6 +223,7 @@ def actualizar_datos_cliente() -> None:
         actualizar_datos_cliente,
     )
 
+
 def mostrar_clientes() -> None:
     """
     Está función muestra todos los clientes
@@ -187,7 +231,6 @@ def mostrar_clientes() -> None:
     post: Esta función lista todos los clientes que existen en el archivo json clientes
     """
     clientes = fx.leer_JSON(RUTA)
-
     # Verificar si se encontraron clientes
     if not clientes:
         print("No se encontraron clientes.")
@@ -197,10 +240,12 @@ def mostrar_clientes() -> None:
             menu.menu_principal,
         )
     # Mostrar la tabla con claves como encabezados
+    rows = [list(cliente.values()) for cliente in clientes.values()]
+    headers = list(next(iter(clientes.values())).keys())
     print(
         tabulate(
-            [clientes.values()],
-            headers=clientes.keys(),
+            rows,
+            headers=headers,
             tablefmt="fancy_grid",
             stralign="center",
         )
@@ -220,6 +265,8 @@ def obtener_id_cliente() -> int:
         except (ValueError, KeyboardInterrupt) as e:
             print("\nError al ingresar el codigo del usuario...")
     return id_cliente
+
+
 def mostrar_datos(datos_cliente):
     print(
         tabulate(
@@ -229,6 +276,7 @@ def mostrar_datos(datos_cliente):
             stralign="center",
         )
     )
+
 
 def borrar_cliente() -> None:
     """
@@ -265,8 +313,7 @@ def borrar_cliente() -> None:
         menu.menu_clientes,
     )
     # Creo una lista con los clientes que no sean ese cliente
-    print(dict_clientes)
-    del(dict_clientes[str(id_cliente)])
+    del dict_clientes[str(id_cliente)]
 
     # Guardar los datos actualizados en el archivo
     cargar_archivo(dict_clientes, "w")
@@ -276,6 +323,7 @@ def borrar_cliente() -> None:
         menu.menu_clientes,
         borrar_cliente,
     )
+
 
 def encontrar_cliente(id_cliente: int):
     clientes = fx.leer_JSON(RUTA)
@@ -301,3 +349,27 @@ def ver_datos_cliente() -> None:
         menu.menu_principal,
         menu.menu_clientes,
     )
+
+
+validations = {
+    "nombre": lambda: fx.validacion_datos(
+        "Ingrese su nombre y apellido: ",
+        "Ingrese nuevamente el nombre",
+        "[A-Za-z\s]{3,}$"
+    ),
+    "telefono": lambda: verificar_celular_repetido(),
+    "direccion": lambda: fx.validacion_datos(
+        "Ingrese su direccion: ",
+        "Ingrese nuevamente su direccion.",
+        "^[a-zA-Z0-9\s]{4,}$"
+    ),
+    "fecha_compra": lambda: ingresar_fecha_compra(),
+    "ciudad": lambda: verificar_ciudades_disponibles(
+        validations["codigo_postal"]()
+    ),
+    "codigo_postal": lambda: fx.validacion_datos(
+        "Ingrese su codigo postal: ",
+        "Ingrese nuevamente su codigo postal.",
+        "[0-9\s]{3,}$"
+    ),
+}

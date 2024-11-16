@@ -1,20 +1,29 @@
 {
     "1": {
-        "nombre": "franco",
-        "telefono": "1122334455",
+        "nombre": "Aguistin villa",
+        "telefono": "1818181818",
         "ciudad": {
             "7167": "Pinamar"
         },
-        "direccion": "casa de franco",
-        "fecha_compra": "2024/02/02"
+        "direccion": "casa de mateo",
+        "fecha_compra": "2024/11/15"
     },
     "2": {
-        "nombre": "agusss",
-        "telefono": "1122334455",
+        "nombre": "agus",
+        "telefono": "1515151515",
         "ciudad": {
             "7167": "Pinamar"
         },
-        "direccion": "rio de cas",
-        "fecha_compra": "2024/06/06"
+        "direccion": "casa de agus",
+        "fecha_compra": "2024/05/05"
+    },
+    "3": {
+        "nombre": "el beto",
+        "telefono": "1616161616",
+        "ciudad": {
+            "7167": "Pinamar"
+        },
+        "direccion": "casa del beto",
+        "fecha_compra": "2024/05/05"
     }
 }
