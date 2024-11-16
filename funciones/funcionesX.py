@@ -1,5 +1,6 @@
 from tabulate import tabulate
 import json
+import re
 import os
 import re
 #import pywhatkit
@@ -26,7 +27,7 @@ def mostrar_opciones(dict_opciones: dict[int, str], option: int) -> None:
     data = [[key, value] for key, value in dict_opciones[option].items()]
     print(
         tabulate(
-            data, headers=["N°1", "Opción"], tablefmt="fancy_grid", stralign="center"
+            data, headers=["N°", "Opción"], tablefmt="fancy_grid", stralign="center"
         )
     )
 
