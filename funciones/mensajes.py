@@ -2,7 +2,7 @@ from menues import menues as menu
 from funciones import funcionesX as fx
 import json
 from tabulate import tabulate
-import datetime
+import textwrap
 
 RUTA = "JSON/mensajes.json"
 
@@ -161,6 +161,9 @@ def actualizar_mensaje() -> None:
         actualizar_mensaje,
     )
 
+def ajustar_texto(texto, ancho):
+    return "\n".join(textwrap.wrap(texto, ancho))
+
 def borrar_mensaje() -> str:
     """
     Lee el json encontrando el mensaje que se quiere borrar mediante el Id, vuelve a cargar
@@ -180,6 +183,13 @@ def borrar_mensaje() -> str:
             }
         }
     """
+    if not mensajes:
+        fx.volver_menu(
+            "¿No se encontraron mensajes, quiere cargar un mensaje? (y/n): ",
+            menu.menu_mensajes,
+            crear_mensaje,
+        )
+
     tabla = [[key, list(value.values())[1]] for key, value in mensajes.items()]
     # muestro los mensajes
     print("\nMensajes disponibles")
@@ -213,8 +223,8 @@ def borrar_mensaje() -> str:
         menu.menu_mensajes,
     )
     # borro el mensaje
-    del mensajes[id_mensaje]
-
+    del mensajes[str(id_mensaje)]
+    
     # Vuelvo a cargar todo en el JSON
     fx.cargar_archivo(
         mensajes,
@@ -222,6 +232,7 @@ def borrar_mensaje() -> str:
         RUTA,
         "El mensaje no se pudo cargar en el archivo",
     )
+    print("Se elimino el mensaje correctamente")
     fx.volver_menu(
         "¿Quiere borrar otro mensaje? (y/n): ",
         menu.menu_mensajes,
@@ -235,24 +246,37 @@ def ver_mensajes() -> None:
     pre: no recibe nada
     post: no devuelve nada
     """
-    mensajes = fx.leer_JSON(RUTA)
-
-    # Verificar si se encontraron mensajes
+    mensajes = {key: value for key, value in fx.leer_JSON(RUTA).items()}
+    """
+        mensajes
+        {
+            "1": {
+                "12": "Holaaa"
+            },
+            "2": {
+                "12": "holaaa"
+            }
+        }
+    """
     if not mensajes:
-        print("No se encontraron mensajes.")
-        return menu.menu_mensajes()
+        fx.volver_menu(
+            "¿No se encontraron mensajes, quiere cargar un mensaje? (y/n): ",
+            menu.menu_mensajes,
+            crear_mensaje,
+        )
 
     # Muestro los mensajes existentes
+    tabla = [[key, list(value.values())[1]] for key, value in mensajes.items()]
     print(
         tabulate(
-            list(mensajes.items()),
-            headers=["Dias", "Mensaje"],
+            tabla,
+            headers=["Nro", "Mensaje"],
             tablefmt="fancy_grid",
             stralign="center",
         )
     )
     fx.volver_menu(
-        "Quiere volver al menu (Y/N): ",
+        "Quiere volver al menu (y/n): ",
         menu.menu_mensajes,
         menu.menu_principal,
     )
@@ -264,20 +288,31 @@ def ver_mensaje() -> None:
     pre: no recibe nada
     post: no devuelve nada
     """
-    mensajes = fx.leer_JSON(RUTA)
-    id_mensaje = fx.validacion_datos(
-        "Ingrese la cantidad de días: ",
-        "Ingrese nuevamente la cantidad de dias",
-        r"\b([1-9][0-9]{0,2})\b",
-    )
-
-    mensaje = mensajes.get(id_mensaje, None)
+    mensajes = {key: value for key, value in fx.leer_JSON(RUTA).items()}
+    """
+        mensajes
+        {
+            "1": {
+                "12": "Holaaa"
+            },
+            "2": {
+                "12": "holaaa"
+            }
+        }
+    """
+    if not mensajes:
+        fx.volver_menu(
+            "¿No se encontraron mensajes, quiere cargar un mensaje? (y/n): ",
+            menu.menu_mensajes,
+            crear_mensaje,
+        )
+    id_mensaje = obtener_id_mensaje()
+    mensaje = mensajes.get(str(id_mensaje), None)
     if mensaje:
-        mensaje = {id_mensaje: mensaje}
         print(
             tabulate(
-                mensaje.items(),
-                headers=["Dias", "Mensaje"],
+                [mensaje.values()],
+                headers=["Nro", "Mensaje"],
                 tablefmt="fancy_grid",
                 stralign="center",
             )
@@ -285,7 +320,7 @@ def ver_mensaje() -> None:
     else:
         print("No se ha encontrado el mensaje")
     fx.volver_menu(
-        "Quiere volver al menu (Y/N): ",
+        "Quiere volver al menu (y/n): ",
         menu.menu_mensajes,
         menu.menu_principal,
     )

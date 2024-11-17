@@ -43,19 +43,19 @@ def mostrar_logo() -> None:
         )
     )
 
+def escribir_archivo_vacio(path: str):
+    with open(path, "w", encoding="utf-8") as archivo:
+        archivo.write("{}")
 
 def leer_JSON(path: str) -> dict:
     try:
         with open(path, "rt", encoding="utf-8") as archivo:
-            contenido = archivo.read().strip()
-            if not contenido:
-                raise ValueError
-            else:
-                clientes = json.load(archivo)
-    except (FileNotFoundError, ValueError):
-        with open(path, "w", encoding="utf-8") as archivo:
-            archivo.write("{}")
+            clientes = json.load(archivo)
+    except FileNotFoundError:
+        escribir_archivo_vacio(path)
         clientes = {}
+    if not clientes:
+        escribir_archivo_vacio(path)
     return clientes
 
 
