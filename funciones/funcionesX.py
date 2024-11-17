@@ -47,8 +47,12 @@ def mostrar_logo() -> None:
 def leer_JSON(path: str) -> dict:
     try:
         with open(path, "rt", encoding="utf-8") as archivo:
-            clientes = json.load(archivo)
-    except FileNotFoundError:
+            contenido = archivo.read().strip()
+            if not contenido:
+                raise ValueError
+            else:
+                clientes = json.load(archivo)
+    except (FileNotFoundError, ValueError):
         with open(path, "w", encoding="utf-8") as archivo:
             archivo.write("{}")
         clientes = {}
@@ -96,3 +100,10 @@ def crear_id(ruta: str) -> int:
         bool: Retorna una tupla con el id
     """
     return max(list(map(int, list(leer_JSON(ruta).keys()))), default=0) + 1
+
+def cargar_archivo(datos_cambiar, access_mode: str, ruta: str, mensaje: str):
+    try:
+        with open(ruta, access_mode, encoding="utf-8") as archivo:
+            json.dump(datos_cambiar, archivo, indent=4, ensure_ascii=False)
+    except Exception:
+        print(mensaje)

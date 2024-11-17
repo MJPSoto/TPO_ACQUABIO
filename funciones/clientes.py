@@ -103,14 +103,6 @@ def obtener_datos_cliente() -> dict:
     return nuevo_cliente
 
 
-def cargar_archivo(datos_cambiar, access_mode: str):
-    try:
-        with open(RUTA, access_mode, encoding="utf-8") as archivo:
-            json.dump(datos_cambiar, archivo, indent=4, ensure_ascii=False)
-    except Exception:
-        print("Error al escribir el archivo clientes.")
-
-
 def crear_nuevo_cliente() -> None:
     """
     Está función carga un nuevo cliente al json de clientes
@@ -138,7 +130,7 @@ def crear_nuevo_cliente() -> None:
     id_cliente = datos_cliente.get("id", 0)
     del datos_cliente["id"]
     dict_clientes[id_cliente] = datos_cliente
-    cargar_archivo(dict_clientes, "wt")
+    fx.cargar_archivo(dict_clientes, "wt", RUTA, "El cliente no se pudo cargar")
     print("Cliente agregado exitosamente.")
     fx.volver_menu(
         "Quiere cargar otro cliente? (Y/N): ", menu.menu_clientes, crear_nuevo_cliente
@@ -204,7 +196,7 @@ def actualizar_datos_cliente() -> None:
     dict_clientes[str(id_cliente)] = datos_cliente
 
     # Guardar los datos actualizados en el archivo
-    cargar_archivo(dict_clientes, "w")
+    fx.cargar_archivo(dict_clientes, "w", RUTA, "El cliente no se pudo cargar")
     print("Cliente actualizado correctamente.")
     fx.volver_menu(
         "Quiere actualizar otro cliente? (Y/N): ",
@@ -305,7 +297,7 @@ def borrar_cliente() -> None:
     del dict_clientes[str(id_cliente)]
 
     # Guardar los datos actualizados en el archivo
-    cargar_archivo(dict_clientes, "w")
+    fx.cargar_archivo(dict_clientes, "w", RUTA, "El cliente no se pudo cargar.")
     print("Cliente borro correctamente el cliente.")
     fx.volver_menu(
         "Quiere borrar otro cliente? (Y/N): ",
