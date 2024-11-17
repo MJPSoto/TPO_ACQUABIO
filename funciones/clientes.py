@@ -40,17 +40,6 @@ def verificar_ciudades_disponibles(codigo_postal: str) -> str:
     return key_value
 
 
-def crear_id_cliente() -> tuple:
-    """Esta funcion lee el JSON y guarda los datos en una lista. Verifica si hay algun valor en "id"
-    Si no lo hay, guardamos 0 en la lista, caso contrario, el mayor dato encontrado en "id".
-    Retornamos
-
-    Returns:
-        bool: Retorna una tupla con el id
-    """
-    return max(list(map(int, list(fx.leer_JSON(RUTA).keys()))), default=0) + 1
-
-
 def verificar_celular_repetido() -> str:
     """Se verifica si un número está repetido o no en el dato "telefono" en clientes.JSON.
     Returns:
@@ -79,7 +68,7 @@ def obtener_datos_cliente() -> dict:
 
     post: Esta función devuelve un diccionario con los datos del cliente
     """
-    ide = crear_id_cliente()
+    ide = fx.crear_id(RUTA)
     nombre = fx.validacion_datos(
         "Ingrese su nombre y apellido: ",
         "Ingrese nuevamente el nombre",
@@ -355,21 +344,19 @@ validations = {
     "nombre": lambda: fx.validacion_datos(
         "Ingrese su nombre y apellido: ",
         "Ingrese nuevamente el nombre",
-        "[A-Za-z\s]{3,}$"
+        "[A-Za-z\s]{3,}$",
     ),
     "telefono": lambda: verificar_celular_repetido(),
     "direccion": lambda: fx.validacion_datos(
         "Ingrese su direccion: ",
         "Ingrese nuevamente su direccion.",
-        "^[a-zA-Z0-9\s]{4,}$"
+        "^[a-zA-Z0-9\s]{4,}$",
     ),
     "fecha_compra": lambda: ingresar_fecha_compra(),
-    "ciudad": lambda: verificar_ciudades_disponibles(
-        validations["codigo_postal"]()
-    ),
+    "ciudad": lambda: verificar_ciudades_disponibles(validations["codigo_postal"]()),
     "codigo_postal": lambda: fx.validacion_datos(
         "Ingrese su codigo postal: ",
         "Ingrese nuevamente su codigo postal.",
-        "[0-9\s]{3,}$"
+        "[0-9\s]{3,}$",
     ),
 }

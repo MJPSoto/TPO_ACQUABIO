@@ -10,7 +10,6 @@ def menu_opciones(menu_desplegar: int) -> int:
     Pre: Está función recibe como parametro en formato entero que representa el menu seleccionado
     Post: Está funcion devuelve un entero que representa el siguiente menu
     """
-
     while True:
         fx.clear_console()
         fx.mostrar_logo()
@@ -24,6 +23,7 @@ def menu_opciones(menu_desplegar: int) -> int:
             print(colored("Opción ingresada no valida...", "red"))
             time.sleep(1)
     return option
+
 
 
 def menu_clientes() -> None:

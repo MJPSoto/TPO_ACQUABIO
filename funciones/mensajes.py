@@ -1,8 +1,8 @@
 from menues import menues as menu
 from funciones import funcionesX as fx
 import json
-import re
 from tabulate import tabulate
+import datetime
 
 RUTA = "JSON/mensajes.json"
 
@@ -23,12 +23,21 @@ def obtener_datos_mensaje() -> dict:
         "Ingrese nuevamente la cantidad de dias",
         r"\b([1-9][0-9]{0,2})\b",
     )
-    mensaje = {cantidad_dias: nuevo_mensaje}
+    mensaje = {"cantidad_dias": cantidad_dias, "mensaje": nuevo_mensaje}
     # verificación de que el mensaje ingresado es correcto
-    print(tabulate(mensaje.items(), headers=["Dias", "Mensaje"], stralign="center"))
+    print(
+        f"\n{tabulate([mensaje.values()], headers=mensaje.keys(), tablefmt="fancy_grid", stralign="center")}\n"
+    )
     fx.volver_menu(
         "¿Los datos ingresados son correctos? (y/n): ", obtener_datos_mensaje
     )
+    """
+        Esta función retorna 
+        {
+            "cantidad_dias" : 31,
+            "mensaje": "prueba 123"
+        }
+    """
     return mensaje
 
 
@@ -49,17 +58,6 @@ def cargar_archivo(datos_cambiar, access_mode: str):
         print("Error al escribir el archivo mensajes.")
 
 
-def crear_id_mensaje() -> tuple:
-    """Esta funcion lee el JSON y guarda los datos en una lista. Verifica si hay algun valor en "id"
-    Si no lo hay, guardamos 0 en la lista, caso contrario, el mayor dato encontrado en "id".
-    Retornamos
-
-    Returns:
-        bool: Retorna una tupla con el id
-    """
-    return max(list(map(int, list(fx.leer_JSON(RUTA).keys()))), default=0) + 1
-
-
 def crear_mensaje() -> None:
     """
     Esta funcion toma los datos, comprueba si son validos y los agrega al json
@@ -67,24 +65,44 @@ def crear_mensaje() -> None:
     post: no devuelve nada
     """
     # leo el json y lo guardo en la variable mansajes
-
-    # key, value = list(mensaje.keys())[0], list(mensaje.values())[0]
-    # validar_existencia(key, list(mensajes.keys()))
-    # mensajes[key] = value
-    
-
     dict_mensajes = {key: value for key, value in fx.leer_JSON(RUTA).items()}
+
+    """
+        dict_mensajes
+        "1": {
+            "cantidad_dias": "31",
+            "mensaje": "holaaa"
+        },
+        "2": {
+            "cantidad_dias": "31",
+            "mensaje": "holaaaa"
+        },
+        "3": {
+            "cantidad_dias": "12",
+            "mensaje": "prueba beto"
+        }
+    """
     mensaje = obtener_datos_mensaje()
-    id_mensaje = crear_id_mensaje()
+    id_mensaje = fx.crear_id(RUTA)
     dict_mensajes[id_mensaje] = mensaje
     cargar_archivo(dict_mensajes, "wt")
-    print("Mensaje agregado exitosamente.")
+    print("Mensaje agregado exitosamente.\n")
 
     fx.volver_menu(
         "¿Quiere volver a cargar otro mensaje? (y/n): ",
         menu.menu_mensajes,
         crear_mensaje,
     )
+
+
+def obtener_id_mensaje() -> int:
+    while True:
+        try:
+            id_cliente = int(input("Ingrese el numero del mensaje: "))
+            break
+        except (ValueError, KeyboardInterrupt) as e:
+            print("\nError al ingresar el codigo del usuario...")
+    return id_cliente
 
 
 def actualizar_mensaje() -> None:
@@ -94,16 +112,33 @@ def actualizar_mensaje() -> None:
     pre: no recibe nada
     port: no devuelve nada
     """
-    mensajes = fx.leer_JSON(RUTA)
-    # Solicitar el ID del mensaje en días
-    id_mensaje = fx.validacion_datos(
-        "Ingrese la cantidad de días: ",
-        "Ingrese nuevamente la cantidad de dias",
-        r"\b([1-9][0-9]{0,2})\b",
-    )
+    if not(fx.leer_JSON(RUTA)):
+        fx.volver_menu(
+            "¿No se cargaron mensajes, quiere cargar un mensaje? (y/n): ",
+            menu.menu_mensajes,
+            crear_mensaje,
+        )
+    mensajes = {key: value for key, value in fx.leer_JSON(RUTA).items()}
+    
+    """
+        mensajes
+        {
+            "1": {
+                "12": "Holaaa"
+            },
+            "2": {
+                "12": "holaaa"
+            }
+        }
+    """
+    tabla = [[key, list(value.values())[1]] for key, value in mensajes.items()]
+    #muestro los mensajes 
+    print("\nMensajes disponibles")
+    print(tabulate(tabla, headers=["Nro", "Mensaje"], tablefmt="fancy_grid", stralign="center"))
+    # Solicito el id del mensaje
+    id_mensaje = obtener_id_mensaje()
 
-    mensaje = mensajes.get(id_mensaje, None)
-
+    mensaje = mensajes.get(str(id_mensaje), None)
     # Si el mensaje no existe, preguntar si se desea crearlo
     if mensaje is None:
         fx.volver_menu(
@@ -111,20 +146,16 @@ def actualizar_mensaje() -> None:
             menu.menu_mensajes,
             crear_mensaje,
         )
-    else:
-        # Mostrar el mensaje en formato de tabla
-        print(
-            tabulate(
-                [[id_mensaje, mensaje]], headers=["Días", "Mensaje"], stralign="center"
-            )
-        )
-        nuevo_mensaje = obtener_datos_mensaje()
-        mensajes[list(nuevo_mensaje.keys())[0]] = list(nuevo_mensaje.values())[0]
-        cargar_archivo(
-            mensajes,
-            "No se ha podido cargar el archivo",
-            "El mensaje se actualizó correctamente",
-        )
+    print(tabulate([mensaje.values()], headers=mensaje.keys(), tablefmt="fancy_grid", stralign="center"))
+    fx.volver_menu("¿Esta bien el mensaje encontrado? (y/n): ", actualizar_mensaje)
+
+    nuevo_mensaje = obtener_datos_mensaje()
+
+    mensajes[str(id_mensaje)] = nuevo_mensaje
+
+    cargar_archivo(mensajes, "w")
+    print("Se actualizo correctamente el mensaje")
+
     fx.volver_menu(
         "¿Quiere actualizar otro mensaje? (y/n): ",
         menu.menu_mensajes,
