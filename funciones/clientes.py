@@ -2,24 +2,20 @@ from menues import menues as menu
 from funciones import funcionesX as fx
 from tabulate import tabulate
 import re
-import json
 import datetime
 
 # declaro la ruta que voy a usar para la funcion leer json
 RUTA = "JSON/clientes.json"
 
 
-def validacion_datos(mensaje: str, mensaje_error: str, expretion: str):
-    while True:
-        dato_verificar = input(mensaje)
-        if re.match(expretion, dato_verificar):
-            break
-        else:
-            print(mensaje_error)
-    return dato_verificar
-
-
 def ingresar_fecha_compra() -> str:
+    """Esta funcion pide por teclado que el usuario ingrese la fecha de compra del ablandador
+    Utilizamos la libreria datetime para asegurarnos que sea una fecha real
+    Se espera que el usuario ingrese fechas a partir del 2022
+
+    Returns:
+        str: Se retora la fecha de compra
+    """
     patron_date = "^(?:\\d{4})(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])$"
     while True:
         date = input("Ingrese la fecha. Ejemplo: 20240608: ")
@@ -32,6 +28,15 @@ def ingresar_fecha_compra() -> str:
 
 
 def verificar_ciudades_disponibles(codigo_postal: str) -> str:
+    """Esta funcion verifica si el codigo postal ingresado por el usuario se encuentra en el JSON.
+    En el caso de que no esté, se le asigna "Otro"
+
+    Args:
+        codigo_postal (str): Recibe como parámetro un código postal de 4 digitos numéricos en formato string
+
+    Returns:
+        str: Retorna un diccionario con el codigo postal como key y la ciudad como valor
+    """
     localidades = fx.leer_JSON("JSON/ciudades.json")
     key_value = {"100100": "Otro"}
     for key, valor in localidades.items():
@@ -41,7 +46,7 @@ def verificar_ciudades_disponibles(codigo_postal: str) -> str:
 
 
 def verificar_celular_repetido() -> str:
-    """Se verifica si un número está repetido o no en el dato "telefono" en clientes.JSON.
+    """En esta funcion se verifica si el numero de telefono igresado por teclado está repetido en el JSON clientes.
     Returns:
         str: Retorna el número de teléfono si no está repetido.
     """
@@ -61,12 +66,10 @@ def verificar_celular_repetido() -> str:
 
 
 def obtener_datos_cliente() -> dict:
-    """
-    Está función obtiene los datos del cliente por consola
+    """En esta función se obtienen todos los datos del cliente
 
-    pre: Está función no necesita parametros
-
-    post: Esta función devuelve un diccionario con los datos del cliente
+    Returns:
+        dict: Se retorna un diccionario con todos los datos
     """
     ide = fx.crear_id(RUTA)
     nombre = fx.validacion_datos(
@@ -100,31 +103,32 @@ def obtener_datos_cliente() -> dict:
         "direccion": direccion,
         "fecha_compra": fecha_compra,
     }
+
+    """
+    Ejemplo del return
+    {
+        "1": {
+            "nombre": "Agustin Villavicencio",
+            "telefono": "2233445566",
+            "ciudad": {
+                "7167": "Pinamar"
+            },
+            "direccion": "Foca 25",
+            "fecha_compra": "2024/12/20"
+        }
+    }
+    """
     return nuevo_cliente
 
 
 def crear_nuevo_cliente() -> None:
-    """
-    Está función carga un nuevo cliente al json de clientes
-    pre: Está función no necesita parametros
-    post: Esta función Guarda un nuevo cliente en el archivo clientes.json.
+    """Esta función crea un nuevo cliente y lo añade al JSON clientes
+    No recibe parámetros
+
+    Returns:
+        None: Retorna None
     """
     # Solicitar datos del cliente
-    """
-    Ejemplo de lo que devuelve la funcion leer_JSON
-    [
-        {
-            "id": 5,
-            "nombre": "Mateo",
-            "telefono": "1122334455",
-            "ciudad": {
-                "7167": "Pinamar"
-            },
-            "direccion": "Casa de mateo",
-            "fecha_compra": "2024/08/06"
-        }
-    ]
-    """
     dict_clientes = {key: value for key, value in fx.leer_JSON(RUTA).items()}
     datos_cliente = obtener_datos_cliente()
     id_cliente = datos_cliente.get("id", 0)
@@ -133,15 +137,17 @@ def crear_nuevo_cliente() -> None:
     fx.cargar_archivo(dict_clientes, "wt", RUTA, "El cliente no se pudo cargar")
     print("Cliente agregado exitosamente.")
     fx.volver_menu(
-        "Quiere cargar otro cliente? (Y/N): ", menu.menu_clientes, crear_nuevo_cliente
+        "¿Quiere cargar otro cliente? (Y/N): ", menu.menu_clientes, crear_nuevo_cliente
     )
+    return None
 
 
 def actualizar_datos_cliente() -> None:
-    """
-    Está función actualiza los datos de un cliente en particular
-    pre: Está función no necesita parametros
-    post: Esta función actualiza los datos de un cliente en el archivo json
+    """En esta funcion se actualizan los datos de un cliente en particular
+    No recibe parámetros
+
+    Returns:
+        None: Retorna None
     """
     id_cliente = obtener_id_cliente()
     dict_clientes = {key: value for key, value in fx.leer_JSON(RUTA).items()}
@@ -150,7 +156,7 @@ def actualizar_datos_cliente() -> None:
     if not dict_clientes:
         print("No se encontraron clientes.")
         fx.volver_menu(
-            "Quiere volver al menu (Y/N): ",
+            "¿Quiere volver al menú principal? (Y/N): ",
             menu.menu_clientes,
             menu.menu_principal,
         )
@@ -159,16 +165,16 @@ def actualizar_datos_cliente() -> None:
     datos_cliente = encontrar_cliente(id_cliente)
     mostrar_datos(datos_cliente)
     fx.volver_menu(
-        "El cliente encontrado es correcto? (Y/N): ",
+        "¿El cliente encontrado es el que desea modificar? (Y/N): ",
         menu.menu_clientes,
     )
-
+    # generamos un diccionario con el índice de cada clave como key y cada key como valor
     keys = {i + 1: key for i, key in enumerate(datos_cliente.keys())}
 
     print(
         tabulate(
             keys.items(),
-            headers=["Nro", "Opción"],
+            headers=["Número", "Opción"],
             tablefmt="fancy_grid",
             stralign="center",
         )
@@ -203,20 +209,22 @@ def actualizar_datos_cliente() -> None:
         menu.menu_clientes,
         actualizar_datos_cliente,
     )
+    return None
 
 
 def mostrar_clientes() -> None:
-    """
-    Está función muestra todos los clientes
-    pre: Está función no necesita parametros
-    post: Esta función lista todos los clientes que existen en el archivo json clientes
+    """Esta función muestra a todos los clientes que hay en el JSON clientes.
+    En el caso de no haberlos, muestra un mensaje en pantalla informandoló.
+    No recibe parámetros.
+    Returns:
+        None: Retorna None.
     """
     clientes = fx.leer_JSON(RUTA)
     # Verificar si se encontraron clientes
     if not clientes:
         print("No se encontraron clientes.")
         fx.volver_menu(
-            "Quiere volver al menu (Y/N): ",
+            "¿Quiere volver al menu principal? (Y/N): ",
             menu.menu_clientes,
             menu.menu_principal,
         )
@@ -236,19 +244,34 @@ def mostrar_clientes() -> None:
         menu.menu_clientes,
         menu.menu_principal,
     )
+    return None
 
 
 def obtener_id_cliente() -> int:
+    """En esta función se obtiene el ID de un cliente en particular ingresado por teclado.
+    No recibe parámetros
+
+    Returns:
+        int: Retorna un número entero
+    """
     while True:
         try:
-            id_cliente = int(input("Ingrese el numero del usuario: "))
+            id_cliente = int(input("Ingrese el ID del usuario: "))
             break
         except (ValueError, KeyboardInterrupt) as e:
             print("\nError al ingresar el codigo del usuario...")
     return id_cliente
 
 
-def mostrar_datos(datos_cliente):
+def mostrar_datos(datos_cliente: dict) -> None:
+    """Esta función está creada para mostrar en pantalla datos de un diccionario
+
+    Args:
+        datos_cliente (_type_): Recibe como parámetro un diccionario con datos
+
+    Returns:
+        None: Retorna None
+    """
     print(
         tabulate(
             [datos_cliente.values()],
@@ -257,13 +280,13 @@ def mostrar_datos(datos_cliente):
             stralign="center",
         )
     )
+    return None
 
 
 def borrar_cliente() -> None:
-    """
-    Está función borra un cliente del la lista de clientes
-    pre: Está función no necesita parametros
-    post: Esta función borra un cliente del archivo json de clientes
+    """Esta función borra a un cliente del JSON clientes
+    No recibe parámetros
+    Retorna None
     """
     id_cliente = obtener_id_cliente()
     dict_clientes = {key: value for key, value in fx.leer_JSON(RUTA).items()}
@@ -306,14 +329,28 @@ def borrar_cliente() -> None:
     )
 
 
-def encontrar_cliente(id_cliente: int):
+def encontrar_cliente(id_cliente: int) -> str:
+    """Esta función se encarga de encontrar a un cliente en específico
+    Se cargan todos los datos del JSON clientes
+
+    Args:
+        id_cliente (int): Se ingresa como parámetro el id del cliente en formato int
+
+    Returns:
+        str: Si se encuentra el cliente, se retorna la key con el id del cliente
+        Caso contrario, se retorna un string vacío
+    """
     clientes = fx.leer_JSON(RUTA)
-    return clientes.get(str(id_cliente), {})
+    return clientes.get(str(id_cliente), "")
 
 
 def ver_datos_cliente() -> None:
-    """
-    Mostrar datos del cliente con ese id
+    """Esta función muestra en pantalla el dato de un cliente en específico
+    Se pide el dato del ID del cliente y luego muestra todos los datos
+    No recibe parámetros
+
+    Returns:
+        None: Retorna None
     """
     id_cliente = obtener_id_cliente()
     datos_cliente = encontrar_cliente(id_cliente)
@@ -330,8 +367,10 @@ def ver_datos_cliente() -> None:
         menu.menu_principal,
         menu.menu_clientes,
     )
+    return None
 
 
+# validaciones para función actualizar_datos_cliente()
 validations = {
     "nombre": lambda: fx.validacion_datos(
         "Ingrese su nombre y apellido: ",

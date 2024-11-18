@@ -1,12 +1,11 @@
-[
-    {
-        "id": 1,
-        "nombre": "hola asd",
+{
+    "1": {
+        "nombre": "lus",
         "telefono": "1231231231",
         "ciudad": {
-            "7167": "Pinamar"
+            "100100": "Otro"
         },
-        "direccion": "foca 20",
-        "fecha_compra": "2020/02/02"
+        "direccion": "hola xd",
+        "fecha_compra": "1231/12/12"
     }
-]
+}
