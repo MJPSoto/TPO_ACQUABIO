@@ -7,7 +7,7 @@ from tabulate import tabulate
 RUTA = "JSON/productos.json"
 
 
-def obtener_datos_producto() -> dict:
+def obtener_datos_producto() -> str:
     """
     Esta funcion toma los datos del producto nuevo y los valida
     pre: no recibe nada
@@ -18,32 +18,12 @@ def obtener_datos_producto() -> dict:
         "Ingrese nuevamente el producto: ",
         r"^(?=.*[A-Za-z])(?=.{4,})(?!^\d+$).*$",
     )
-    clave = int(max((producto for producto in fx.leer_JSON(RUTA)), default=0)) + 1
-    producto = {clave: nuevo_producto}
     # verificación de que el producto ingresado es correcto
-    print(tabulate(producto.items(), headers=["clave", "producto"], stralign="center"))
+    print(tabulate([[nuevo_producto]], headers=["producto"], stralign="center"))
     fx.volver_menu(
         "¿Los datos ingresados son correctos? (y/n): ", obtener_datos_producto
     )
-    return producto
-
-
-def validar_existencia(producto: list, productos: list) -> None:
-    if producto in productos:
-        fx.volver_menu(
-            "¿El producto ya existe, quiere cargar otro producto? (y/n): ",
-            menu.menu_producto,
-            crear_producto,
-        )
-
-
-def cargar_archivo(datos_cargar, producto_excep: str, producto_success: str) -> None:
-    try:
-        with open(RUTA, "w") as archivo:
-            json.dump(datos_cargar, archivo, indent=4)
-    except Exception:
-        print(producto_excep)
-    print(producto_success)
+    return nuevo_producto
 
 
 def crear_producto() -> None:
@@ -54,16 +34,15 @@ def crear_producto() -> None:
     """
     # leo el json y lo guardo en la variable mansajes
     productos = fx.leer_JSON(RUTA)
+    #Obtengo el nombre del producto
     producto = obtener_datos_producto()
-    key, value = list(producto.keys())[0], list(producto.values())[0]
-    validar_existencia(key, list(productos.keys()))
-    productos[key] = value
+    #Creo un nuevo id
+    id_mensaje = fx.crear_id(RUTA)
+    #Lo cargo la variable de productos
+    productos[id_mensaje] = producto
 
-    cargar_archivo(
-        productos,
-        "No se ha podido cargar el archivo",
-        "El producto se cargo correctamente",
-    )
+    #Lo cargo en el JSON de productos
+    fx.cargar_archivo(productos, "wt", RUTA, "No se pudo cargar el producto")
 
     fx.volver_menu(
         "¿Quiere volver a cargar otro producto? (y/n): ",
@@ -79,62 +58,66 @@ def actualizar_producto() -> None:
     pre: no recibe nada
     port: no devuelve nada
     """
+    # Se lee el json de los productos
     productos = fx.leer_JSON(RUTA)
-    # Solicitar el ID del producto en días
-    id_producto = fx.validacion_datos(
-        "Ingrese la clave: ",
-        "Ingrese nuevamente la clave",
-        r"\b([1-9][0-9]{0,2})\b",
+    if not productos:
+        fx.volver_menu(
+            "¿No hay productos, desea crear uno? (y/n): ",
+            menu.menu_producto,
+            crear_producto,
+        )
+    print("\n Productos disponibles")
+    print(
+        tabulate(
+            productos.items(),
+            headers=["ID", "Producto"],
+            tablefmt="fancy_grid",
+            stralign="center",
+        )
     )
 
-    producto = productos.get(id_producto, None)
+    # solicito el id del producto
+    id_producto = fx.obtener_id(
+        "Ingrese el ID del producto: ", "El ID ingresado no es valido."
+    )
 
-    # Si el producto no existe, preguntar si se desea crearlo
-    if producto is None:
+    # se almacena el producto encontrado en el diccionario según al id que corresponda
+    producto = productos.get(str(id_producto), None)
+    if not producto:
         fx.volver_menu(
             "¿El producto no existe, desea crearlo? (y/n): ",
             menu.menu_producto,
             crear_producto,
         )
-    else:
-        # Mostrar el producto en formato de tabla
-        print(
-            tabulate(
-                [[id_producto, producto]], headers=["Días", "producto"], stralign="center"
-            )
+    print(
+        tabulate(
+            [[id_producto, producto]],
+            headers=["ID", "Producto"],
+            tablefmt="fancy_grid",
+            stralign="center",
         )
-        nuevo_producto = obtener_datos_producto()
-        productos[list(nuevo_producto.keys())[0]] = list(nuevo_producto.values())[0]
-        cargar_archivo(
-            productos,
-            "No se ha podido cargar el archivo",
-            "El producto se actualizó correctamente",
-        )
+    )
+    fx.volver_menu("¿Es el producto que busca modificar? (Y/N): ", actualizar_producto)
+
+    nuevo_producto = fx.validacion_datos(
+        "Ingrese el nuevo producto: ",
+        "Ingrese nuevamente el producto",
+        "[A-Za-z\s]{3,}$",
+    )
+
+    productos[str(id_producto)] = nuevo_producto
+
+    fx.cargar_archivo(
+        productos, "w", RUTA, "No se pudo cargar el producto en el archivo"
+    )
+    print("Se actualizó correctamente el producto")
+
     fx.volver_menu(
         "¿Quiere actualizar otro producto? (y/n): ",
         menu.menu_producto,
         actualizar_producto,
     )
-
-
-def obtener_producto_x_id(productos: list) -> dict:
-    id_producto = fx.validacion_datos(
-        "Ingrese la clave: ",
-        "Ingrese nuevamente la clave",
-        r"\b([1-9][0-9]{0,2})\b",
-    )
-
-    producto = productos.get(id_producto, None)
-
-    # Si el producto no existe, preguntar si se desea crearlo
-    if producto is None:
-        fx.volver_menu(
-            "¿El producto no existe, desea crearlo? (y/n): ",
-            menu.menu_producto,
-            crear_producto,
-        )
-    else:
-        return {id_producto: producto}
+    return None
 
 
 def borrar_producto() -> str:
@@ -146,11 +129,27 @@ def borrar_producto() -> str:
     """
     # leo el json
     productos = fx.leer_JSON(RUTA)
-    producto = obtener_producto_x_id(productos)
+    """
+        productos
+        {
+            "1": sarasa,
+            "2": prueba
+        }
+    """
+    id_producto = fx.obtener_id(
+        "Ingrese el ID del mensaje: ", "El ID ingresado no es valido."
+    )
+    producto = productos.get(str(id_producto), None)
+    if not producto:
+        fx.volver_menu(
+            "El ID ingresado no existe, quiere crearlo? (y/n): ",
+            menu.menu_producto,
+            crear_producto,
+        )
     print(
         tabulate(
-            producto.items(),
-            headers=["clave", "producto"],
+            [[id_producto, producto]],
+            headers=["ID", "producto"],
             tablefmt="fancy_grid",
             stralign="center",
         )
@@ -162,14 +161,13 @@ def borrar_producto() -> str:
         menu.menu_producto,
     )
     # borro el producto
-    del productos[list(producto.keys())[0]]
+    del productos[str(id_producto)]
 
     # Vuelvo a cargar todo en el JSON
-    cargar_archivo(
-        productos,
-        "No se ha podido cargar el archivo",
-        "El producto se borró correctamente",
+    fx.cargar_archivo(
+        productos, "w", RUTA, "No se pudo escribir en el archivo de productos"
     )
+    print("El productos se elimino correctamente")
     fx.volver_menu(
         "¿Quiere borrar otro producto? (y/n): ",
         menu.menu_producto,
@@ -184,11 +182,20 @@ def ver_productos() -> None:
     post: no devuelve nada
     """
     productos = fx.leer_JSON(RUTA)
-
+    """
+        productos
+        {
+            "1": sarasa,
+            "2": prueba
+        }
+    """
     # Verificar si se encontraron productos
     if not productos:
-        print("No se encontraron productos.")
-        return menu.menu_producto()
+        fx.volver_menu(
+            "No se encontraron productos, quiere cargar un producto? (y/n): ",
+            menu.menu_producto,
+            crear_producto,
+        )
 
     # Muestro los productos existentes
     print(
@@ -213,19 +220,23 @@ def ver_producto() -> None:
     post: no devuelve nada
     """
     productos = fx.leer_JSON(RUTA)
-    id_producto = fx.validacion_datos(
-        "Ingrese la clave: ",
-        "Ingrese nuevamente la clave",
-        r"\b([1-9][0-9]{0,2})\b",
+    """
+        productos
+        {
+            "1": sarasa,
+            "2": prueba
+        }
+    """
+    id_producto = fx.obtener_id(
+        "Ingrese el ID del mensaje: ", "El ID ingresado no es valido."
     )
-
     producto = productos.get(id_producto, None)
     if producto:
         producto = {id_producto: producto}
         print(
             tabulate(
                 producto.items(),
-                headers=["clave", "producto"],
+                headers=["ID", "Producto"],
                 tablefmt="fancy_grid",
                 stralign="center",
             )

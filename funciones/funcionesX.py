@@ -107,3 +107,11 @@ def cargar_archivo(datos_cambiar, access_mode: str, ruta: str, mensaje: str):
             json.dump(datos_cambiar, archivo, indent=4, ensure_ascii=False)
     except Exception:
         print(mensaje)
+
+def obtener_id(msj_input: str, msj_error: str) -> int:
+    try:
+        id = int(input(msj_input))
+    except (ValueError, KeyboardInterrupt) as e:
+        print(f"\n{msj_error}")
+        obtener_id(msj_input, msj_error)
+    return id

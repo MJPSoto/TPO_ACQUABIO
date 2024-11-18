@@ -2,7 +2,6 @@ from menues import menues as menu
 from funciones import funcionesX as fx
 from tabulate import tabulate
 import re
-import json
 import datetime
 
 # declaro la ruta que voy a usar para la funcion leer json

@@ -1,6 +1,5 @@
 from menues import menues as menu
 from funciones import funcionesX as fx
-import json
 from tabulate import tabulate
 import textwrap
 
@@ -16,12 +15,12 @@ def obtener_datos_mensaje() -> dict:
     nuevo_mensaje = fx.validacion_datos(
         "Ingrese nuevo mensaje: ",
         "Ingrese nuevamente el mensaje",
-        r"^(?=.*[A-Za-z])(?=.{4,})(?!^\d+$).*$",
+        "^(?=.*[A-Za-z])(?=.{4,})(?!^\d+$).*$",
     )
     cantidad_dias = fx.validacion_datos(
         "Ingrese la cantidad de días: ",
         "Ingrese nuevamente la cantidad de dias",
-        r"\b([1-9][0-9]{0,2})\b",
+        "^[1-9][0-9]{0,2}$",
     )
     mensaje = {"cantidad_dias": cantidad_dias, "mensaje": nuevo_mensaje}
     # verificación de que el mensaje ingresado es correcto
@@ -57,7 +56,7 @@ def crear_mensaje() -> None:
     post: no devuelve nada
     """
     # leo el json y lo guardo en la variable mansajes
-        
+
     dict_mensajes = {key: value for key, value in fx.leer_JSON(RUTA).items()}
 
     """
@@ -90,16 +89,6 @@ def crear_mensaje() -> None:
     )
 
 
-def obtener_id_mensaje() -> int:
-    while True:
-        try:
-            id_cliente = int(input("Ingrese el numero del mensaje: "))
-            break
-        except (ValueError, KeyboardInterrupt) as e:
-            print("\nError al ingresar el codigo del usuario...")
-    return id_cliente
-
-
 def actualizar_mensaje() -> None:
     """
     Obtine el mensaje nuevo a travez de la funcion obtener_datos_mensaje, busca la dias
@@ -128,7 +117,9 @@ def actualizar_mensaje() -> None:
         )
     )
     # Solicito el id del mensaje
-    id_mensaje = obtener_id_mensaje()
+    id_mensaje = fx.obtener_id(
+        "Ingrese el ID del mensaje: ", "El ID ingresado no es valido."
+    )
 
     mensaje = mensajes.get(str(id_mensaje), None)
     # Si el mensaje no existe, preguntar si se desea crearlo
@@ -161,8 +152,6 @@ def actualizar_mensaje() -> None:
         actualizar_mensaje,
     )
 
-def ajustar_texto(texto, ancho):
-    return "\n".join(textwrap.wrap(texto, ancho))
 
 def borrar_mensaje() -> str:
     """
@@ -199,7 +188,9 @@ def borrar_mensaje() -> str:
         )
     )
     # Solicito el id del mensaje
-    id_mensaje = obtener_id_mensaje()
+    id_mensaje = fx.obtener_id(
+        "Ingrese el ID del mensaje: ", "El ID ingresado no es valido."
+    )
     mensaje = mensajes.get(str(id_mensaje), None)
 
     # Si el mensaje no existe, preguntar si se desea crearlo
@@ -224,7 +215,7 @@ def borrar_mensaje() -> str:
     )
     # borro el mensaje
     del mensajes[str(id_mensaje)]
-    
+
     # Vuelvo a cargar todo en el JSON
     fx.cargar_archivo(
         mensajes,
@@ -306,7 +297,9 @@ def ver_mensaje() -> None:
             menu.menu_mensajes,
             crear_mensaje,
         )
-    id_mensaje = obtener_id_mensaje()
+    id_mensaje = fx.obtener_id(
+        "Ingrese el ID del mensaje: ", "El ID ingresado no es valido."
+    )
     mensaje = mensajes.get(str(id_mensaje), None)
     if mensaje:
         print(
