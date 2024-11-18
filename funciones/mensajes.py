@@ -1,15 +1,18 @@
 from menues import menues as menu
 from funciones import funcionesX as fx
 from tabulate import tabulate
+import textwrap
 
 RUTA = "JSON/mensajes.json"
 
 
 def obtener_datos_mensaje() -> dict:
-    """
-    Esta funcion toma los datos del mensaje nuevo y los valida
-    pre: no recibe nada
-    post: devuelve una lista con los datos
+    """Esta funcion obtiene los datos del mensaje nuevo, los valida y se almacena como un diccionario de diccionarios
+    La primer clave es referente al mensaje N1, su valor contiene la cantidad de días y el mensaje a emitir.
+    No recibe parámetros
+
+    Returns:
+        dict: Retorna un diccionario
     """
     nuevo_mensaje = fx.validacion_datos(
         "Ingrese nuevo mensaje: ",
@@ -26,25 +29,30 @@ def obtener_datos_mensaje() -> dict:
     print(
         f"\n{tabulate([mensaje.values()], headers=mensaje.keys(), tablefmt="fancy_grid", stralign="center")}\n"
     )
-    fx.volver_menu(
+    confirmacion = fx.volver_menu(
         "¿Los datos ingresados son correctos? (y/n): ", obtener_datos_mensaje
     )
     """
         Esta función retorna 
         {
-            "cantidad_dias" : 31,
-            "mensaje": "prueba 123"
+        "1": {
+            "cantidad_dias": "60",
+            "mensaje": "Hola ¿como estas? Te dejamos este recordatorio para cambiar tu filtro"
+            }
         }
     """
+    if confirmacion:
+        return confirmacion
     return mensaje
-    
 
 
 def crear_mensaje() -> None:
-    """
-    Esta funcion toma los datos, comprueba si son validos y los agrega al json
-    pre: no recibe nada
-    post: no devuelve nada
+    """Esta función lee todo el JSON mensajes, luego se obtienen los datos para crear el mensaje, se almacenan
+    en el JSON y se sobreescriben los datos.
+
+    No recibe parámetros
+    Returns:
+        None: Retorna None
     """
     # leo el json y lo guardo en la variable mansajes
 
@@ -52,17 +60,15 @@ def crear_mensaje() -> None:
 
     """
         dict_mensajes
-        "1": {
-            "cantidad_dias": "31",
-            "mensaje": "holaaa"
-        },
-        "2": {
-            "cantidad_dias": "31",
-            "mensaje": "holaaaa"
-        },
-        "3": {
-            "cantidad_dias": "12",
-            "mensaje": "prueba beto"
+        {
+            "1": {
+                "cantidad_dias": "60",
+                "mensaje": "Hola ¿como estas? Te dejamos este recordatorio para cambiar tu filtro"
+            },
+            "2": {
+                "cantidad_dias": "30",
+                "mensaje": "Hola como andas? Pasaron 30 días esto es un recordatorio para colocarle sal a su ablandador"
+            }
         }
     """
     mensaje = obtener_datos_mensaje()
@@ -78,33 +84,38 @@ def crear_mensaje() -> None:
         menu.menu_mensajes,
         crear_mensaje,
     )
+    return None
 
 
 def actualizar_mensaje() -> None:
     """
-    Obtine el mensaje nuevo a travez de la funcion obtener_datos_mensaje, busca la dias
-    que es la cantidad de dias, y si está modifica el mensaje
-    pre: no recibe nada
-    port: no devuelve nada
+    Esta función actualiza un mensaje en específico ingresado por el usuario.
+    Toma todos los datos del JSON y el usuario ingresa el número del ID para ingresar al mensaje y actualizarlo
+
+    No recibe parámetros
+    Returns:
+        None: Retorna None
     """
     mensajes = {key: value for key, value in fx.leer_JSON(RUTA).items()}
     """
         mensajes
         {
             "1": {
-                "12": "Holaaa"
+                "cantidad_dias": "60",
+                "mensaje": "Hola ¿como estas? Te dejamos este recordatorio para cambiar tu filtro"
             },
             "2": {
-                "12": "holaaa"
+                "cantidad_dias": "30",
+                "mensaje": "Hola como andas? Pasaron 30 días esto es un recordatorio para colocarle sal a su ablandador"
             }
-        }
+        }   
     """
     tabla = [[key, list(value.values())[1]] for key, value in mensajes.items()]
     # muestro los mensajes
     print("\nMensajes disponibles")
     print(
         tabulate(
-            tabla, headers=["Nro", "Mensaje"], tablefmt="fancy_grid", stralign="center"
+            tabla, headers=["ID", "Mensaje"], tablefmt="fancy_grid", stralign="center"
         )
     )
     # Solicito el id del mensaje
@@ -128,28 +139,33 @@ def actualizar_mensaje() -> None:
             stralign="center",
         )
     )
-    fx.volver_menu("¿Esta bien el mensaje encontrado? (y/n): ", actualizar_mensaje)
+    fx.volver_menu("¿El mensaje es el que estas buscando? (y/n): ", actualizar_mensaje)
 
     nuevo_mensaje = obtener_datos_mensaje()
 
     mensajes[str(id_mensaje)] = nuevo_mensaje
 
-    fx.cargar_archivo(mensajes, "w", RUTA, "No se pudo cargar el mensaje en el archivo")
-    print("Se actualizo correctamente el mensaje")
+    fx.cargar_archivo(
+        mensajes, "wt", RUTA, "No se pudo cargar el mensaje en el archivo"
+    )
+    print("Se actualizó correctamente el mensaje")
 
     fx.volver_menu(
         "¿Quiere actualizar otro mensaje? (y/n): ",
         menu.menu_mensajes,
         actualizar_mensaje,
     )
+    return None
 
 
-def borrar_mensaje() -> str:
+def borrar_mensaje() -> None:
     """
-    Lee el json encontrando el mensaje que se quiere borrar mediante el Id, vuelve a cargar
-    el json con los mensajes excepto el eliminado.
-    pre: no recibe nada
-    prost: no devuelve nada
+    Esta función borra un mensaje en específico. Muestra en pantalla todos los datos del JSON, luego se selecciona un ID
+    para ingresar a un mensaje determinado. Al seleccionar, se pregunta si se quiere o no borrar ese mensaje.
+
+    No recibe parámetros
+    Returns:
+        None: Retorna None
     """
     mensajes = {key: value for key, value in fx.leer_JSON(RUTA).items()}
     """
@@ -175,7 +191,7 @@ def borrar_mensaje() -> str:
     print("\nMensajes disponibles")
     print(
         tabulate(
-            tabla, headers=["Nro", "Mensaje"], tablefmt="fancy_grid", stralign="center"
+            tabla, headers=["Días", "Mensaje"], tablefmt="fancy_grid", stralign="center"
         )
     )
     # Solicito el id del mensaje
@@ -220,13 +236,17 @@ def borrar_mensaje() -> str:
         menu.menu_mensajes,
         borrar_mensaje,
     )
+    return None
 
 
 def ver_mensajes() -> None:
     """
-    Lee el json, e imprime los mensajes en pantalla
-    pre: no recibe nada
-    post: no devuelve nada
+    Esta función toma todos los datos del JSON e imprime en pantala todos los mensajes que haya cargados.
+    En el caso de que no haya, se muestra en pantalla un mensaje informando que no hay mensajes.
+
+    No recibe parámetros
+    Returns:
+        None: Retorna None
     """
     mensajes = {key: value for key, value in fx.leer_JSON(RUTA).items()}
     """
@@ -252,7 +272,7 @@ def ver_mensajes() -> None:
     print(
         tabulate(
             tabla,
-            headers=["Nro", "Mensaje"],
+            headers=["ID", "Mensaje"],
             tablefmt="fancy_grid",
             stralign="center",
         )
@@ -266,9 +286,12 @@ def ver_mensajes() -> None:
 
 def ver_mensaje() -> None:
     """
-    Busca un mensaje mediante el id, si lo encuentra lo mustra en pantalla
-    pre: no recibe nada
-    post: no devuelve nada
+    Esta función toma todos los datos por el JSON, se le pide un ID al usuario para ingresar a un mensaje en específico.
+    Al ingresar el ID, se imprime en pantalla el mensaje.
+
+    No recibe parámetros
+    Returns:
+        None: Retorna None
     """
     mensajes = {key: value for key, value in fx.leer_JSON(RUTA).items()}
     """
@@ -296,7 +319,7 @@ def ver_mensaje() -> None:
         print(
             tabulate(
                 [mensaje.values()],
-                headers=["Nro", "Mensaje"],
+                headers=["Días", "Mensaje"],
                 tablefmt="fancy_grid",
                 stralign="center",
             )

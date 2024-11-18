@@ -8,15 +8,31 @@ CLIENTE_RUTA = "JSON/clientes.json"
 MENSAJE_RUTA = "JSON/mensajes.json"
 
 
-def calcular_dias(fecha_compra):
+def calcular_dias(fecha_compra) -> int:
     """
-    contrato
+    Esta función calcula la diferencia entre la fecha de compra y la fecha actual
+
+    Args:
+        fecha_compra (type): Este parámetro tiene como dato la fecha de compra 
+
+    Returns:
+        int: Esto devuelve un entero con la diferencia entre ambas fechas
     """
     fecha_compra = datetime.strptime(fecha_compra, "%Y/%m/%d")
     return abs((datetime.now() - fecha_compra).days)
 
 
-def enviar_mensajes():
+def enviar_mensajes() -> None:
+    """ 
+    Esta función almacena el numero de celular, nombre y apellido y un mensaje del JSON mensajes dependiendo la fecha que transcurrió para
+    poder enviar ese mensaje.
+    Se tiene que utilizar librerías como PyWhatKit y PyAutoGUI para poder enviar los mensajes por WhatsApp
+    
+    No recibe parámetros
+    
+    Returns:
+        None: Retorna None
+    """
     dict_mensajes = {key: value for key, value in fx.leer_JSON(MENSAJE_RUTA).items()}
     dict_clientes = {key: value for key, value in fx.leer_JSON(CLIENTE_RUTA).items()}
 
@@ -68,3 +84,4 @@ def enviar_mensajes():
         exit,
         menu.menu_principal,
     )
+    return None

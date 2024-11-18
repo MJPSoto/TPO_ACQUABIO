@@ -1,0 +1,11 @@
+{
+    "1": {
+        "nombre": "Claudio Norberto",
+        "telefono": "1122334455",
+        "ciudad": {
+            "100100": "Otro"
+        },
+        "direccion": "don pepe 1555",
+        "fecha_compra": "2024/06/08"
+    }
+}

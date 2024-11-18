@@ -1,5 +1,7 @@
 from menues import menues as menu
 from funciones import funcionesX as fx
+import json
+import re
 from tabulate import tabulate
 
 RUTA = "JSON/productos.json"
@@ -7,9 +9,12 @@ RUTA = "JSON/productos.json"
 
 def obtener_datos_producto() -> str:
     """
-    Esta funcion toma los datos del producto nuevo y los valida
-    pre: no recibe nada
-    post: devuelve una lista con los datos
+    En esta función se obtiene el producto ingresado por el usuario.
+    Se validan los datos y se almacenan en una variable
+
+    No recibe parámetros
+    Returns:
+        str: Retorna el nuevo producto en formato string
     """
     nuevo_producto = fx.validacion_datos(
         "Ingrese nuevo producto: ",
@@ -18,17 +23,25 @@ def obtener_datos_producto() -> str:
     )
     # verificación de que el producto ingresado es correcto
     print(tabulate([[nuevo_producto]], headers=["producto"], stralign="center"))
-    fx.volver_menu(
+    confirmacion = fx.volver_menu(
         "¿Los datos ingresados son correctos? (y/n): ", obtener_datos_producto
     )
+
+    if confirmacion:
+        return confirmacion
     return nuevo_producto
 
 
 def crear_producto() -> None:
     """
-    Esta funcion toma los datos, comprueba si son validos y los agrega al json
-    pre: no recibe nada
-    post: no devuelve nada
+    En esta función primero se cargan todos los datos del JSON productos si los hay.
+    Luego se obtienen los datos del producto
+    Se crea un ID correspondiente
+    Se carga el producto al JSON productos
+
+    No recibe parámetros
+    Returns:
+        None: Retorna None
     """
     # leo el json y lo guardo en la variable mansajes
     productos = fx.leer_JSON(RUTA)
@@ -47,14 +60,17 @@ def crear_producto() -> None:
         menu.menu_producto,
         crear_producto,
     )
+    return None
 
 
 def actualizar_producto() -> None:
     """
-    Obtine el producto nuevo a travez de la funcion obtener_datos_producto, busca la clave
-    que es la clave, y si está modifica el producto
-    pre: no recibe nada
-    port: no devuelve nada
+    Esta función actualiza un producto en específico ingresado por el usuario.
+    Toma todos los datos del JSON y el usuario ingresa el número del ID para ingresar al producto y actualizarlo
+    
+    No recibe parámetros
+    Returns:
+        None: Retorna None
     """
     # Se lee el json de los productos
     productos = fx.leer_JSON(RUTA)
@@ -120,10 +136,12 @@ def actualizar_producto() -> None:
 
 def borrar_producto() -> str:
     """
-    Lee el json encontrando el producto que se quiere borrar mediante el Id, vuelve a cargar
-    el json con los productos excepto el eliminado.
-    pre: no recibe nada
-    prost: no devuelve nada
+    Esta función borra un producto en específico. Muestra en pantalla todos los datos del JSON, luego se selecciona un ID
+    para ingresar a un producto determinado. Al seleccionar, se pregunta si se quiere o no borrar ese mensaje.
+
+    No recibe parámetros
+    Returns:
+        None: Retorna None
     """
     # leo el json
     productos = fx.leer_JSON(RUTA)
@@ -175,9 +193,12 @@ def borrar_producto() -> str:
 
 def ver_productos() -> None:
     """
-    Lee el json, e imprime los productos en pantalla
-    pre: no recibe nada
-    post: no devuelve nada
+    Esta función toma todos los datos del JSON e imprime en pantala todos los productos que haya cargados.
+    En el caso de que no haya, se muestra en pantalla un mensaje informando que no hay productos.
+
+    No recibe parámetros
+    Returns:
+        None: Retorna None
     """
     productos = fx.leer_JSON(RUTA)
     """
@@ -213,22 +234,25 @@ def ver_productos() -> None:
 
 def ver_producto() -> None:
     """
-    Busca un producto mediante el id, si lo encuentra lo mustra en pantalla
-    pre: no recibe nada
-    post: no devuelve nada
+    Esta función toma todos los datos por el JSON, se le pide un ID al usuario para ingresar a un mensaje en específico.
+    Al ingresar el ID, se imprime en pantalla el mensaje.
+
+    No recibe parámetros
+    Returns:
+        None: Retorna None
     """
     productos = fx.leer_JSON(RUTA)
     """
         productos
         {
-            "1": sarasa,
-            "2": prueba
+            "1": "filtro de carbón activado",
+            "2": "filtro de sedimentos"
         }
     """
     id_producto = fx.obtener_id(
-        "Ingrese el ID del mensaje: ", "El ID ingresado no es valido."
+        "Ingrese el ID del producto: ", "El ID ingresado no es valido."
     )
-    producto = productos.get(id_producto, None)
+    producto = productos.get(str(id_producto), None)
     if producto:
         producto = {id_producto: producto}
         print(
