@@ -51,10 +51,7 @@ def leer_JSON(path: str) -> dict:
     try:
         with open(path, "r", encoding="utf-8") as archivo:
             clientes = json.load(archivo)
-    except FileNotFoundError:
-        escribir_archivo_vacio(path)
-        clientes = {}
-    except json.JSONDecodeError as e:
+    except (FileNotFoundError, json.JSONDecodeError):
         escribir_archivo_vacio(path)
         clientes = {}
     return clientes
@@ -78,7 +75,7 @@ def volver_menu(mensaje: str, funtion_no, funtion_si=None) -> None:
         volver_menu("Quiere volver al menu principal? (Y/N): ", funtion_no, funtion_si)
     seleccion = opciones.get(option, funtion_no)
     if seleccion:
-        seleccion()
+        return seleccion()
 
 
 def validacion_datos(mensaje: str, mensaje_error: str, expretion: str):

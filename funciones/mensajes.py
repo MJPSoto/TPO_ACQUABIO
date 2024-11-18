@@ -1,7 +1,6 @@
 from menues import menues as menu
 from funciones import funcionesX as fx
 from tabulate import tabulate
-import textwrap
 
 RUTA = "JSON/mensajes.json"
 
@@ -38,15 +37,7 @@ def obtener_datos_mensaje() -> dict:
         }
     """
     return mensaje
-
-
-def validar_existencia(mensaje: list, mensajes: list) -> None:
-    if mensaje in mensajes:
-        fx.volver_menu(
-            "¿El mensaje ya existe, quiere cargar otro mensaje? (y/n): ",
-            menu.menu_mensajes,
-            crear_mensaje,
-        )
+    
 
 
 def crear_mensaje() -> None:
