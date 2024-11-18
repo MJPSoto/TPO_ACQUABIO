@@ -1,10 +1,14 @@
 {
     "1": {
-        "cantidad_dias": "32",
-        "mensaje": "holaaaa"
+        "cantidad_dias": "365",
+        "mensaje": "Hola, como estas?, estos es un recordatorio, ya cumpliste un año, se recomienda hacer un services del equipo"
     },
     "2": {
-        "cantidad_dias": "12",
-        "mensaje": "asdjasdjasdj"
+        "cantidad_dias": "30",
+        "mensaje": "Hola, como estas?, estos es un recordatorio para ponerle sal al ablandador de agua"
+    },
+    "3": {
+        "cantidad_dias": "90",
+        "mensaje": "Hola, como estas?, esto es un recordatorio para hacer el cambio de filtro de tu ablandador"
     }
 }

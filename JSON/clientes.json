@@ -6,6 +6,24 @@
             "7167": "Pinamar"
         },
         "direccion": "casa de beto",
-        "fecha_compra": "2024/02/02"
+        "fecha_compra": "2024/10/18"
+    },
+    "2": {
+        "nombre": "El Agus",
+        "telefono": "5555555555",
+        "ciudad": {
+            "7167": "Pinamar"
+        },
+        "direccion": "casa de beto",
+        "fecha_compra": "2024/11/08"
+    },
+    "3": {
+        "nombre": "El meteo",
+        "telefono": "5555555554",
+        "ciudad": {
+            "7167": "Pinamar"
+        },
+        "direccion": "casa de beto",
+        "fecha_compra": "2024/09/08"
     }
 }

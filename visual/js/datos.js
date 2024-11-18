@@ -2,35 +2,10 @@ const contendorCLientes = document.querySelector("#contenedorClientes")
 const btn_agregar_cliente = document.querySelector("#btnAgregar")
 const btn_borrar_cliente = document.querySelector("#borrar_cliente")
 
-btn_agregar_cliente.addEventListener("click", agregarCliente)
-
-
-const clientesArray = Array(contendorCLientes.children);
-console.log(clientesArray)
-clientesArray.forEach(Element =>{
-    console.log(Element)
-})
-
-function agregarCliente(){
-    fetch('../../funciones/clientes.py/borrar_cliente', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log(data.mensaje);  // Mostrar el mensaje de éxito
-        })
-        .catch(error => {
-          console.error('Error:', error);
-        });
-}
 
 fetch('../../JSON/clientes.json')
 .then(response => response.json())
 .then(data => {
-  console.log(data)
    data.forEach(Element => {
         let person =  document.createElement("a")
         person.classList.add("contenedor_persona")

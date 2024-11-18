@@ -49,13 +49,14 @@ def escribir_archivo_vacio(path: str):
 
 def leer_JSON(path: str) -> dict:
     try:
-        with open(path, "rt", encoding="utf-8") as archivo:
+        with open(path, "r", encoding="utf-8") as archivo:
             clientes = json.load(archivo)
     except FileNotFoundError:
         escribir_archivo_vacio(path)
         clientes = {}
-    if not clientes:
+    except json.JSONDecodeError as e:
         escribir_archivo_vacio(path)
+        clientes = {}
     return clientes
 
 

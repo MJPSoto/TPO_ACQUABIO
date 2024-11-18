@@ -1,7 +1,5 @@
 from menues import menues as menu
 from funciones import funcionesX as fx
-import json
-import re
 from tabulate import tabulate
 
 RUTA = "JSON/productos.json"

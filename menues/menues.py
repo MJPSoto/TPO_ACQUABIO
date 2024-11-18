@@ -1,5 +1,5 @@
 from variables import constantes as cs
-from funciones import funcionesX as fx, mensajes as fm, productos as fp, clientes as fc
+from funciones import funcionesX as fx, mensajes as fm, productos as fp, clientes as fc, envio_mensajes as em
 from termcolor import colored
 import time
 
@@ -109,6 +109,6 @@ def menu_principal() -> None:
         case 3:
             menu_producto()
         case 4:
-            fx.enviar_mensaje()
+            em.enviar_mensajes()
         case 5:
             exit()
